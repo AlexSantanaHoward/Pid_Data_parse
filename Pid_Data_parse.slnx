@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Pid_Data_parse/Pid_Data_parse.vcxproj" Id="3c24b299-3a3a-441b-9c11-2aed31000b28" />
+</Solution>
