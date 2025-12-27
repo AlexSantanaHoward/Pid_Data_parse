@@ -103,23 +103,44 @@ static void build_message(char c)
 					strncpy(data, message + 30, (((data_len * 2) + data_len) - 7));
 					string_replace_char(data, ',', ' ');
 
-					printf(     "  %02i | %s |", data_len - 2, opid);
-					fprintf(fw, "  %02i | %s |", data_len - 2, opid);
+                    if(nc_state())
+                    {
+					    printf(     "  %02i | %s |", data_len - 2, opid);
+                    }
+
+                    if(no_state())
+                    {
+					    fprintf(fw, "  %02i | %s |", data_len - 2, opid);
+                    }
 				}
                 // Weird scenario, suspect it carries shutdown message
 				else if (data_len == 1)
 				{
 					strncpy(data, message + 30, 2);
 
-					printf(		"  %02i | %s |", data_len, opid);
-					fprintf(fw, "  %02i | %s |", data_len, opid);
+                    if (nc_state())
+                    {
+					    printf(		"  %02i | %s |", data_len, opid);
+                    }
+
+                    if (no_state())
+                    {
+					    fprintf(fw, "  %02i | %s |", data_len, opid);
+                    }
 
 				}
                 // No Data
 				else
 				{
-					printf(     "  %02i | %s |", data_len, opid);
-					fprintf(fw, "  %02i | %s |", data_len, opid);
+                    if (nc_state())
+                    {
+					    printf(     "  %02i | %s |", data_len, opid);
+                    }
+                    if (no_state())
+                    {
+					    fprintf(fw, "  %02i | %s |", data_len, opid);
+                    }
+
 				}
 
 
@@ -129,73 +150,128 @@ static void build_message(char c)
 
 					if (opid_uint == id_value[i])
 					{
+                        if (nc_state())
+                        {
+						    printf(     " %s", id_name[i]);
+                        }
 
-						printf(     " %s", id_name[i]);
-						fprintf(fw, " %s", id_name[i]);
+                        if (no_state())
+                        {
+						    fprintf(fw, " %s", id_name[i]);
+                        }
+
+                        // name found.
 						r = 1;
 					}
 
+                    // If no name is found, fill in the space
 					if (i == 22 && r != 1)
 					{
-
-						printf(     "               ");
-						fprintf(fw, "               ");
+                        if (nc_state())
+                        {
+						    printf(     "               ");
+                        }
+                        if (no_state())
+                        {
+						    fprintf(fw, "               ");
+                        }
 
 					}
 				}
                 //-----------------------------------------------      
 
-                printf(     "| ");
-                fprintf(fw, "| ");
+                if (nc_state())
+                {
+                    printf(     "| ");
+                }
+                if (no_state())
+                {
+                    fprintf(fw, "| ");
+                }
 
                 int div_by_8 = (data_len - 2) % 8;
                 
                 for (int i = 0; i <= (data_len - 3); i++)
                 {
-                    // TODO: nake this better!!
+                    // TODO: make this better!!
                     if (i == 8 || i == 16 || i == 24 || i == 32 || i == 40 || i == 48 || i == 56)
                     //if (i % 8 == 0 && i != 1 && (data_len - 3) > i)
                     {
-                        printf(     "|\n     |      |               | ");
-                        fprintf(fw, "|\n     |      |               | ");
+                        if (nc_state())
+                        {
+                            printf(     "|\n     |      |               | ");
+                        }
+                        if (no_state())
+                        {
+                            fprintf(fw, "|\n     |      |               | ");
+                        }
                     }
 
-                    printf(    "%.*s ", 2, data + (i * 3));
-                    fprintf(fw,"%.*s ", 2, data + (i * 3));
-
+                    if (nc_state())
+                    {
+                        printf(    "%.*s ", 2, data + (i * 3));
+                    }
+                    if (no_state())
+                    {
+                        fprintf(fw,"%.*s ", 2, data + (i * 3));
+                    }
                 }
 
                 // Empty space filler.
                 if (data_len == 0)
                 {
-                    printf(     "                        ");
-                    fprintf(fw, "                        ");
+                    if (nc_state())
+                    {
+                        printf(     "                        ");
+                    }
+                    if (no_state())
+                    {
+                        fprintf(fw, "                        ");
+                    }
                 }
                 else if (data_len == 1)
                 {
-                    printf(     "                        ");
-                    fprintf(fw, "                        ");
+                    if (nc_state())
+                    {
+                        printf(     "                        ");
+                    }
+                    if (no_state())
+                    {
+                        fprintf(fw, "                        ");
+                    }
                 }
                 else
                 {
                     if (div_by_8 != 0)
                     {
-                    //printf("div_by_8 = %i", div_by_8);
-                    for (int i = 0; i <= (7 - div_by_8); i++)
-                    {
-                        printf(     "   ");
-                        fprintf(fw, "   ");
+                        //printf("div_by_8 = %i", div_by_8);
+                        for (int i = 0; i <= (7 - div_by_8); i++)
+                        {
 
-                    }
+                            if (nc_state())
+                            {
+                                printf(     "   ");
+                            }
+
+                            if (no_state())
+                            {
+                                fprintf(fw, "   ");
+                            }
+                        }
                     }
                 }
                 //----------------------------
 
-                //bap_parse();
+                //bap_parse(data, data_len);
 
-                printf(     "|\n");
-                fprintf(fw, "|\n");
-                
+                if (nc_state())
+                {
+                    printf(     "|\n");
+                }
+                if (no_state())
+                {
+                    fprintf(fw, "|\n");
+                }
 			}
 		}
 
@@ -335,22 +411,40 @@ int main(int argc, char* argv[])
 	if (fp != NULL)
 	{
 
-        fw = fopen(file_out(), "w");
+        if (no_state())
+        {
+            fw = fopen(file_out(), "w");
 
-        // Check if write file has been opened
-        if (fw == NULL)
-        {
-            printf("\n Error Opening %s : Unable to access \n", file_out());
-            exit(0);
-        }
-        else
-        {
-            printf("Writing to: %s\n", file_out());
+            // Check if write file has been opened
+            if (fw == NULL)
+            {
+                printf("\n Error Opening %s : Unable to access \n", file_out());
+                exit(0);
+            }
+            else
+            {
+                printf("Writing to: %s\n", file_out());
+            }
         }
         //----------------------------------------
 
-		printf(     "\n Len |CANID |    CAN Name   |       BAP Message       |\n-----|------|---------------|-------------------------|\n");
-		fprintf(fw, "\n Len |CANID |    CAN Name   |       BAP Message       |\n-----|------|---------------|-------------------------|\n");
+        // Output header
+        if(nc_state())
+        {
+            printf(     "\n_______________________________________________________\n");
+            printf(       " Msg | CAN  |      CAN      |           BAP           |\n");
+            printf(       " Len |  ID  |     Name      |         Message         |\n");
+            printf(       "-----|------|---------------|-------------------------|\n");
+        }
+        if (no_state())
+        {
+            fprintf(fw, "\n_______________________________________________________\n");
+            fprintf(fw,   " Msg | CAN  |      CAN      |           BAP           |\n");
+            fprintf(fw,   " Len |  ID  |     Name      |         Message         |\n");
+            fprintf(fw,   "-----|------|---------------|-------------------------|\n");
+        }
+
+        // ---------------------------------------
 
 		while (1)
 		{
@@ -360,7 +454,10 @@ int main(int argc, char* argv[])
 			if (value == EOF)
 			{
 				fclose(fp);
-				fclose(fw);
+                if (no_state())
+                {
+				    fclose(fw);
+                }
 				break;
 			}
 			else

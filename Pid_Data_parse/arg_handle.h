@@ -11,6 +11,9 @@ char* file_in(void);
 char* file_out(void);
 
 int pv_state(void);
+int nc_state(void);
+int no_state(void);
+
 
 void arg_handle(int argc, char* argv[]);
 

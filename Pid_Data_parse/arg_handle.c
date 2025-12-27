@@ -8,6 +8,8 @@
 
 char* input_option = "-i";
 char* pulse_option = "-pv";
+char* console_option = "-nc";
+char* output_option = "-no";
 //TODO: have option for diff out & no console output
 
 char* out_file_end = "_clean.txt";
@@ -16,6 +18,8 @@ static char input_file[250];
 static char output_file[250];
 
 static int pv_option;
+static int nc_option;
+static int no_option;
 
 
 static int string_find_last_char(char* str, char c)
@@ -49,12 +53,26 @@ int pv_state(void)
     return pv_option;
 }
 
+int nc_state(void)
+{
+    return nc_option;
+}
+
+int no_state(void)
+{
+    return no_option;
+}
+
 
 
 void arg_handle(int argc, char* argv[])
 {
     // Initialise pv_option as 0 and allow arg to overide.
     pv_option = 0;
+    // Intialize nc_option as 1 and allow arg to overide.
+    nc_option = 1;
+    // Intialize no_option as 1 and allow arg to overide.
+    no_option = 1;
 
     int last_period = 0;
 
@@ -62,7 +80,10 @@ void arg_handle(int argc, char* argv[])
     {
         // print help message
         // TODO: print out args + example
-        printf("Error");
+        printf("\nError insufficient arguments\n");
+        printf(" -i <Input_File.txt>\n");
+        printf(" -nc = No console output\n");
+        printf(" -nc = No output file\n\n");
         exit(0);
     }
     else
@@ -94,6 +115,14 @@ void arg_handle(int argc, char* argv[])
             else if(strcmp(pulse_option, argv[i]) == 0)
             {
                 pv_option = 1;
+            }
+            else if (strcmp(console_option, argv[i]) == 0)
+            {
+                nc_option = 0;
+            }
+            else if (strcmp(output_option, argv[i]) == 0)
+            {
+                no_option = 0;
             }
         }
     }

@@ -128,10 +128,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="arg_handle.c" />
+    <ClCompile Include="bap.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arg_handle.h" />
+    <ClInclude Include="bap.h" />
     <ClInclude Include="pid_id_data.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

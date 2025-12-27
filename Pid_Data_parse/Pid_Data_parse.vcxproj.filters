@@ -21,12 +21,18 @@
     <ClCompile Include="arg_handle.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pid_id_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="arg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
