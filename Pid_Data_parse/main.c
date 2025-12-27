@@ -62,9 +62,12 @@ static void build_message(char c)
 
 	static char message[250];
 
-	char ack[] = "c6";
-	char len[3] = { 0 };
-	char opid[5] = { 0 };
+	char ack[]      = "c6";
+	char len[3]     = { 0 };
+
+    // Dont belive this is opid, more like CAN_ID
+	char opid[5]    = { 0 };
+
 	char data[1000] = { 0 };
 
 	uint16_t opid_uint = 0;
@@ -86,35 +89,41 @@ static void build_message(char c)
 			opid[3] = opid[4];
 			opid[4] = '\0';
 
+            // TODO: Should this be here..
 			int data_len = str_to_hex(len);
 
 			opid_uint = str_to_hex(opid);
 
 			if (strncmp(len, ack, 2) != 0)
 			{
-
-				if (data_len >= 2)
+                
+                // Carries ordinary data
+                if (data_len >= 2)
 				{
 					strncpy(data, message + 30, (((data_len * 2) + data_len) - 7));
 					string_replace_char(data, ',', ' ');
 
-					printf(     "  %02i | %s |", str_to_hex(len) - 2, opid);
-					fprintf(fw, "  %02i | %s |", str_to_hex(len) - 2, opid);
+					printf(     "  %02i | %s |", data_len - 2, opid);
+					fprintf(fw, "  %02i | %s |", data_len - 2, opid);
 				}
+                // Weird scenario, suspect it carries shutdown message
 				else if (data_len == 1)
 				{
 					strncpy(data, message + 30, 2);
 
-					printf(		"  %02i | %s |", str_to_hex(len), opid);
-					fprintf(fw, "  %02i | %s |", str_to_hex(len), opid);
+					printf(		"  %02i | %s |", data_len, opid);
+					fprintf(fw, "  %02i | %s |", data_len, opid);
 
 				}
+                // No Data
 				else
 				{
-					printf(     "  %02i | %s |", str_to_hex(len), opid);
-					fprintf(fw, "  %02i | %s |", str_to_hex(len), opid);
+					printf(     "  %02i | %s |", data_len, opid);
+					fprintf(fw, "  %02i | %s |", data_len, opid);
 				}
 
+
+                // CAN ID Name checker -----------------------------
 				for (int i = 0, r = 0; i <= 22; i++)
 				{
 
@@ -134,10 +143,59 @@ static void build_message(char c)
 
 					}
 				}
+                //-----------------------------------------------      
 
-				printf(     "| %s\n", data);
-				fprintf(fw, "| %s\n", data);
+                printf(     "| ");
+                fprintf(fw, "| ");
 
+                int div_by_8 = (data_len - 2) % 8;
+                
+                for (int i = 0; i <= (data_len - 3); i++)
+                {
+                    // TODO: nake this better!!
+                    if (i == 8 || i == 16 || i == 24 || i == 32 || i == 40 || i == 48 || i == 56)
+                    //if (i % 8 == 0 && i != 1 && (data_len - 3) > i)
+                    {
+                        printf(     "|\n     |      |               | ");
+                        fprintf(fw, "|\n     |      |               | ");
+                    }
+
+                    printf(    "%.*s ", 2, data + (i * 3));
+                    fprintf(fw,"%.*s ", 2, data + (i * 3));
+
+                }
+
+                // Empty space filler.
+                if (data_len == 0)
+                {
+                    printf(     "                        ");
+                    fprintf(fw, "                        ");
+                }
+                else if (data_len == 1)
+                {
+                    printf(     "                        ");
+                    fprintf(fw, "                        ");
+                }
+                else
+                {
+                    if (div_by_8 != 0)
+                    {
+                    //printf("div_by_8 = %i", div_by_8);
+                    for (int i = 0; i <= (7 - div_by_8); i++)
+                    {
+                        printf(     "   ");
+                        fprintf(fw, "   ");
+
+                    }
+                    }
+                }
+                //----------------------------
+
+                //bap_parse();
+
+                printf(     "|\n");
+                fprintf(fw, "|\n");
+                
 			}
 		}
 
@@ -282,17 +340,17 @@ int main(int argc, char* argv[])
         // Check if write file has been opened
         if (fw == NULL)
         {
-            printf("\n Error Opening %s : Unable to access \n", Fout_name);
+            printf("\n Error Opening %s : Unable to access \n", file_out());
             exit(0);
         }
         else
         {
-            printf("\nWriting to %s\n", Fout_name);
+            printf("Writing to: %s\n", file_out());
         }
         //----------------------------------------
 
-		printf(     "\n Len | OPID | Function Name | Data\n-----|------|---------------|---------------------\n");
-		fprintf(fw, "\n Len | OPID | Function Name | Data\n-----|------|---------------|---------------------\n");
+		printf(     "\n Len |CANID |    CAN Name   |       BAP Message       |\n-----|------|---------------|-------------------------|\n");
+		fprintf(fw, "\n Len |CANID |    CAN Name   |       BAP Message       |\n-----|------|---------------|-------------------------|\n");
 
 		while (1)
 		{

@@ -36,19 +36,16 @@ static int string_find_last_char(char* str, char c)
 
 char* file_in(void)
 {
-    printf("in_file = %s\n", input_file);
     return input_file;
 }
 
 char* file_out(void)
 {
-    printf("Out_file = %s\n", output_file);
     return output_file;
 }
 
 int pv_state(void)
 {
-    //printf("Pulse view option = %i\n", pv_option);
     return pv_option;
 }
 
@@ -64,6 +61,7 @@ void arg_handle(int argc, char* argv[])
     if(argc <= 1)
     {
         // print help message
+        // TODO: print out args + example
         printf("Error");
         exit(0);
     }
@@ -72,8 +70,6 @@ void arg_handle(int argc, char* argv[])
         // Start at one to avoid application name
         for(int i = 1; i < argc; i++)
         {
-            
-            printf("\nargv[%i] = %s\n argc = %i\n", i, argv[i] , argc);
 
             if(strcmp(input_option,argv[i]) == 0 && argc > i)
             {
@@ -82,7 +78,7 @@ void arg_handle(int argc, char* argv[])
 
                 // Set input file name
                 snprintf(input_file, strlen(argv[i]) + 1, "%s", argv[i]);
-                printf("input file = %s\n", input_file);
+                printf("\nInput file: %s\n", input_file);
 
                 // Set output file name
                 snprintf(output_file, strlen(argv[i]) + 1, "%s", argv[i]);
@@ -93,12 +89,7 @@ void arg_handle(int argc, char* argv[])
                 for(int r = 0; r <= strlen(out_file_end); r++)
                 {
                     output_file[r + last_period] = out_file_end[r];
-                    printf("input file = %s\n", input_file);
-                }
-                
-                printf("output file = %s\n", output_file);
-                
-
+                }              
             }
             else if(strcmp(pulse_option, argv[i]) == 0)
             {
