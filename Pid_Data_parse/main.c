@@ -5,6 +5,7 @@
 
 #include "pid_id_data.h"
 #include "arg_handle.h"
+#include "bap.h"
 
 #pragma warning(disable : 4996)
 
@@ -64,10 +65,10 @@ static void build_message(char c)
 
 	char ack[]      = "c6";
 	char len[3]     = { 0 };
+    int data_len = 0;
 
     // Dont belive this is opid, more like CAN_ID
 	char opid[5]    = { 0 };
-
 	char data[1000] = { 0 };
 
 	uint16_t opid_uint = 0;
@@ -261,8 +262,9 @@ static void build_message(char c)
                     }
                 }
                 //----------------------------
-
-                //bap_parse(data, data_len);
+                //TODO: implement. Make return string, then its easier to switch off and on..
+                bap_parse(data, data_len);
+                //printf("%s = len %i\n",data, strlen(data));
 
                 if (nc_state())
                 {
@@ -283,6 +285,7 @@ static void build_message(char c)
 		p++;
 	}
 }
+
 
 static void pulseview_build_message(char c)
 {
@@ -431,10 +434,20 @@ int main(int argc, char* argv[])
         // Output header
         if(nc_state())
         {
-            printf(     "\n_______________________________________________________\n");
-            printf(       " Msg | CAN  |      CAN      |           BAP           |\n");
-            printf(       " Len |  ID  |     Name      |         Message         |\n");
-            printf(       "-----|------|---------------|-------------------------|\n");
+            if(bap_state())
+            {
+                printf(     "\n______________________________________________________________________________________________\n");
+                printf(       " Msg | CAN  |      CAN      |           BAP           | Long  | Frame |         \n");
+                printf(       " Len |  ID  |     Name      |         Message         | frame | type  |        \n");
+                printf(       "-----|------|---------------|-------------------------|----------------------------------\n");
+            }
+            else
+            {
+                printf("\n_______________________________________________________\n");
+                printf(" Msg | CAN  |      CAN      |           BAP           |\n");
+                printf(" Len |  ID  |     Name      |         Message         |\n");
+                printf("-----|------|---------------|-------------------------|\n");
+            }
         }
         if (no_state())
         {

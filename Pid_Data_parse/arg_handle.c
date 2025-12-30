@@ -6,11 +6,11 @@
 
 #pragma warning(disable : 4996)
 
-char* input_option = "-i";
-char* pulse_option = "-pv";
-char* console_option = "-nc";
-char* output_option = "-no";
-//TODO: have option for diff out & no console output
+char* input_option      = "-i";
+char* pulse_option      = "-pv";
+char* console_option    = "-nc";
+char* output_option     = "-no";
+char* bap_parse_option  = "-bap";
 
 char* out_file_end = "_clean.txt";
 
@@ -20,6 +20,7 @@ static char output_file[250];
 static int pv_option;
 static int nc_option;
 static int no_option;
+static int bap_option;
 
 
 static int string_find_last_char(char* str, char c)
@@ -63,27 +64,38 @@ int no_state(void)
     return no_option;
 }
 
+int bap_state(void)
+{
+    return bap_option;
+}
+
 
 
 void arg_handle(int argc, char* argv[])
 {
     // Initialise pv_option as 0 and allow arg to overide.
     pv_option = 0;
+
+    // Intialize bap_option as 0 and allow arg to overide.
+    bap_option = 0;
+
     // Intialize nc_option as 1 and allow arg to overide.
     nc_option = 1;
+
     // Intialize no_option as 1 and allow arg to overide.
     no_option = 1;
+
 
     int last_period = 0;
 
     if(argc <= 1)
     {
         // print help message
-        // TODO: print out args + example
         printf("\nError insufficient arguments\n");
         printf(" -i <Input_File.txt>\n");
-        printf(" -nc = No console output\n");
-        printf(" -nc = No output file\n\n");
+        printf(" -nc  = No console output\n");
+        printf(" -nc  = No output file\n");
+        printf(" -bap = Enable BAP parse\n\n");
         exit(0);
     }
     else
@@ -123,6 +135,10 @@ void arg_handle(int argc, char* argv[])
             else if (strcmp(output_option, argv[i]) == 0)
             {
                 no_option = 0;
+            }
+            else if (strcmp(bap_parse_option, argv[i]) == 0)
+            {
+                bap_option = 1;
             }
         }
     }
