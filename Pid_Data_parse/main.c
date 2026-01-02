@@ -3,9 +3,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "pid_id_data.h"
+//#include "pid_id_data.h"
 #include "arg_handle.h"
 #include "bap.h"
+#include "input.h"
+#include "output.h"
+#include "file.h"
 
 #pragma warning(disable : 4996)
 
@@ -55,7 +58,15 @@ static void clear_str(char* str, int len)
 	}
 }
 
+static void clear_buff(uint8_t *buff, int len)
+{
+    for (int i = 0; i <= len; i++)
+    {
+        buff[i] = 0;
+    }
+}
 
+// TODO: re-write this in seperate source file.
 static void build_message(char c)
 {
 
@@ -144,7 +155,7 @@ static void build_message(char c)
 
 				}
 
-
+                /*
                 // CAN ID Name checker -----------------------------
 				for (int i = 0, r = 0; i <= 22; i++)
 				{
@@ -164,7 +175,7 @@ static void build_message(char c)
                         // name found.
 						r = 1;
 					}
-
+                    
                     // If no name is found, fill in the space
 					if (i == 22 && r != 1)
 					{
@@ -178,7 +189,7 @@ static void build_message(char c)
                         }
 
 					}
-				}
+				}*/
                 //-----------------------------------------------      
 
                 if (nc_state())
@@ -263,12 +274,14 @@ static void build_message(char c)
                 }
                 //----------------------------
                 //TODO: implement. Make return string, then its easier to switch off and on..
-                bap_parse(data, data_len);
+                //bap_parse(data, data_len);
                 //printf("%s = len %i\n",data, strlen(data));
 
                 if (nc_state())
                 {
-                    printf(     "|\n");
+                    printf("|");
+                    bap_parse(data, data_len);
+                    printf(     "\n");
                 }
                 if (no_state())
                 {
@@ -287,210 +300,51 @@ static void build_message(char c)
 }
 
 
-static void pulseview_build_message(char c)
-{
-	static int  p;
-	static int state = 0;
-
-	uint8_t crnt_byte = 0;
-
-	static char Rx_Buff[250];
-	static char Tx_Buff[250];
-	static char message[1000];
-
-	char crnt_byte_s[4] = {0};
-
-	#define Hunting		0
-	#define In_Frame	1
-	#define C0_Escape	2
-
-	Rx_Buff[p] = c;
-
-	if (c == '\n') 
-	{
-		// Line will be longer if it contains Start/Stop byte
-		if (p <= 35) 
-		{
-			// Extract byte from string
-			strncpy(crnt_byte_s, Rx_Buff + (p - 2), 2);
-			crnt_byte = str_to_hex(crnt_byte_s);
-			
-			switch (state) 
-			{
-
-			case(Hunting):
-
-				if (crnt_byte == 0xc2 || crnt_byte == 0xc3)
-				{
-					state = In_Frame;
-
-					crnt_byte_s[2] = ',';
-					//crnt_byte_s[3] = '\0';
-
-					strncpy(message, crnt_byte_s, 3);
-				}
-
-				break;
-
-			case(In_Frame):
-
-				if (crnt_byte == 0xc1) 
-				{
-					crnt_byte_s[2] = '\0';
-					strcat(message, crnt_byte_s);
-
-					snprintf(Tx_Buff,(20 + strlen(message)),"Message arrived:  %s\n",message);
-
-					for (int i = 0; i != 250; i++)
-					{
-						build_message(Tx_Buff[i]);
-
-						if(Tx_Buff[i] == '\n')
-						{
-							break;
-						}
-					}
-					
-					clear_str(message, 250);
-					clear_str(Rx_Buff, 250);
-					clear_str(Tx_Buff, 250);
-
-					state = Hunting;
-
-
-					//state = End_Frame;
-				}
-				else if (crnt_byte == 0xc0)
-				{
-					state = C0_Escape;
-				}
-				else 
-				{
-					crnt_byte_s[2] = ',';
-					//crnt_byte_s[3] = '\0';
-					strcat(message, crnt_byte_s);
-				}
-
-				break;
-
-			case(C0_Escape):
-
-				crnt_byte_s[0] = 'c';
-
-				crnt_byte_s[2] = ',';
-				//crnt_byte_s[3] = '\0';
-				strcat(message, crnt_byte_s);
-
-				state = In_Frame;
-
-				break;
-
-			}
-		}
-
-		p = 0;
-		clear_str(Rx_Buff, 250);
-	}
-	else 
-	{
-		p++;
-	}
-
-}
-
-
 int main(int argc, char* argv[])
 {
 
     arg_handle(argc, argv);
 
-	// Read file
-	FILE* fp;
 	char value;
-	fp = fopen(file_in(), "r");
+
+    // TODO: this can really go away..
+    FILE* input = input_file_init();
+    FILE* test = input_p();
+
+    FILE* output = output_file_init();
+    FILE* test_o = output_p();
+
+    // Output header
+    print_table_header();
 
 
-	// Check if read file exsists.
-	if (fp != NULL)
+    while (1)
 	{
+		//value = fgetc(test);
+        value = fgetc(input_p());
 
-        if (no_state())
-        {
-            fw = fopen(file_out(), "w");
 
-            // Check if write file has been opened
-            if (fw == NULL)
-            {
-                printf("\n Error Opening %s : Unable to access \n", file_out());
-                exit(0);
-            }
-            else
-            {
-                printf("Writing to: %s\n", file_out());
-            }
-        }
-        //----------------------------------------
-
-        // Output header
-        if(nc_state())
-        {
-            if(bap_state())
-            {
-                printf(     "\n______________________________________________________________________________________________\n");
-                printf(       " Msg | CAN  |      CAN      |           BAP           | Long  | Frame |         \n");
-                printf(       " Len |  ID  |     Name      |         Message         | frame | type  |        \n");
-                printf(       "-----|------|---------------|-------------------------|----------------------------------\n");
-            }
-            else
-            {
-                printf("\n_______________________________________________________\n");
-                printf(" Msg | CAN  |      CAN      |           BAP           |\n");
-                printf(" Len |  ID  |     Name      |         Message         |\n");
-                printf("-----|------|---------------|-------------------------|\n");
-            }
-        }
-        if (no_state())
-        {
-            fprintf(fw, "\n_______________________________________________________\n");
-            fprintf(fw,   " Msg | CAN  |      CAN      |           BAP           |\n");
-            fprintf(fw,   " Len |  ID  |     Name      |         Message         |\n");
-            fprintf(fw,   "-----|------|---------------|-------------------------|\n");
-        }
-
-        // ---------------------------------------
-
-		while (1)
+		if (value == EOF)
 		{
-
-			value = fgetc(fp);
-
-			if (value == EOF)
-			{
-				fclose(fp);
-                if (no_state())
-                {
-				    fclose(fw);
-                }
-				break;
-			}
-			else
-			{
-                if(pv_state())
-                {
-                    pulseview_build_message(value);
-                }
-                else
-                {
-				    build_message(value);
-                }
-
-			}
+			input_close();
+            if (no_state())
+            {
+                output_close();
+            }
+		    	break;
 		}
-	}
-	else
-	{
-		printf("\n Error Opening %s : File not found \n", file_in());
-		exit(0);
+		else
+		{
+            if(pv_state())
+            {
+                pulseview_build_message(value);
+            }
+            else
+            {
+			    build_message(value);
+            }
+
+		}
 	}
 }
 

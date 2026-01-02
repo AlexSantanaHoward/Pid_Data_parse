@@ -105,8 +105,7 @@ void arg_handle(int argc, char* argv[])
         {
 
             if(strcmp(input_option,argv[i]) == 0 && argc > i)
-            {
-                
+            {            
                 i++;
 
                 // Set input file name

@@ -129,12 +129,19 @@
   <ItemGroup>
     <ClCompile Include="arg_handle.c" />
     <ClCompile Include="bap.c" />
+    <ClCompile Include="can_ids.c" />
+    <ClCompile Include="file.c" />
+    <ClCompile Include="Input.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="output.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arg_handle.h" />
     <ClInclude Include="bap.h" />
-    <ClInclude Include="pid_id_data.h" />
+    <ClInclude Include="can_ids.h" />
+    <ClInclude Include="file.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="output.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
