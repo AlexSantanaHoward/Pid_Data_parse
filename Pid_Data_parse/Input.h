@@ -6,4 +6,6 @@
 
 void pulseview_build_message(char c);
 
+void build_message(char c);
+
 #endif

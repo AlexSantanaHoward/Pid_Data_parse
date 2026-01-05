@@ -158,6 +158,12 @@ void output_message(uint8_t* data)
 
         // Print Message
         printf("%s", format_message_data(data));
+
+        if(bap_state())
+        {
+            bap_parse(data, msg_length);
+        }
+
         printf("\n");
 
     }

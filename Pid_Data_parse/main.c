@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-//#include "pid_id_data.h"
 #include "arg_handle.h"
 #include "bap.h"
 #include "input.h"
@@ -20,7 +19,7 @@ char* clean_txt = "_clean.txt";
 char Fout_name[20];
 
 FILE* fw;
-
+/*
 static void string_replace_char(char* str, char current_c, char new_c)
 {
 	for (int i = 0; i <= 1000; i++)
@@ -65,241 +64,7 @@ static void clear_buff(uint8_t *buff, int len)
         buff[i] = 0;
     }
 }
-
-// TODO: re-write this in seperate source file.
-static void build_message(char c)
-{
-
-	static int  p;
-
-	static char message[250];
-
-	char ack[]      = "c6";
-	char len[3]     = { 0 };
-    int data_len = 0;
-
-    // Dont belive this is opid, more like CAN_ID
-	char opid[5]    = { 0 };
-	char data[1000] = { 0 };
-
-	uint16_t opid_uint = 0;
-
-	message[p] = c;
-
-	if (c == '\n')
-	{
-
-		if (strstr(message, msg) != NULL)
-		{
-
-			message[p] = '\0';
-
-			strncpy(len, message + 21, 2);
-
-			strncpy(opid, message + 24, 5);
-			opid[2] = opid[3];
-			opid[3] = opid[4];
-			opid[4] = '\0';
-
-            // TODO: Should this be here..
-			int data_len = str_to_hex(len);
-
-			opid_uint = str_to_hex(opid);
-
-			if (strncmp(len, ack, 2) != 0)
-			{
-                
-                // Carries ordinary data
-                if (data_len >= 2)
-				{
-					strncpy(data, message + 30, (((data_len * 2) + data_len) - 7));
-					string_replace_char(data, ',', ' ');
-
-                    if(nc_state())
-                    {
-					    printf(     "  %02i | %s |", data_len - 2, opid);
-                    }
-
-                    if(no_state())
-                    {
-					    fprintf(fw, "  %02i | %s |", data_len - 2, opid);
-                    }
-				}
-                // Weird scenario, suspect it carries shutdown message
-				else if (data_len == 1)
-				{
-					strncpy(data, message + 30, 2);
-
-                    if (nc_state())
-                    {
-					    printf(		"  %02i | %s |", data_len, opid);
-                    }
-
-                    if (no_state())
-                    {
-					    fprintf(fw, "  %02i | %s |", data_len, opid);
-                    }
-
-				}
-                // No Data
-				else
-				{
-                    if (nc_state())
-                    {
-					    printf(     "  %02i | %s |", data_len, opid);
-                    }
-                    if (no_state())
-                    {
-					    fprintf(fw, "  %02i | %s |", data_len, opid);
-                    }
-
-				}
-
-                /*
-                // CAN ID Name checker -----------------------------
-				for (int i = 0, r = 0; i <= 22; i++)
-				{
-
-					if (opid_uint == id_value[i])
-					{
-                        if (nc_state())
-                        {
-						    printf(     " %s", id_name[i]);
-                        }
-
-                        if (no_state())
-                        {
-						    fprintf(fw, " %s", id_name[i]);
-                        }
-
-                        // name found.
-						r = 1;
-					}
-                    
-                    // If no name is found, fill in the space
-					if (i == 22 && r != 1)
-					{
-                        if (nc_state())
-                        {
-						    printf(     "               ");
-                        }
-                        if (no_state())
-                        {
-						    fprintf(fw, "               ");
-                        }
-
-					}
-				}*/
-                //-----------------------------------------------      
-
-                if (nc_state())
-                {
-                    printf(     "| ");
-                }
-                if (no_state())
-                {
-                    fprintf(fw, "| ");
-                }
-
-                int div_by_8 = (data_len - 2) % 8;
-                
-                for (int i = 0; i <= (data_len - 3); i++)
-                {
-                    // TODO: make this better!!
-                    if (i == 8 || i == 16 || i == 24 || i == 32 || i == 40 || i == 48 || i == 56)
-                    //if (i % 8 == 0 && i != 1 && (data_len - 3) > i)
-                    {
-                        if (nc_state())
-                        {
-                            printf(     "|\n     |      |               | ");
-                        }
-                        if (no_state())
-                        {
-                            fprintf(fw, "|\n     |      |               | ");
-                        }
-                    }
-
-                    if (nc_state())
-                    {
-                        printf(    "%.*s ", 2, data + (i * 3));
-                    }
-                    if (no_state())
-                    {
-                        fprintf(fw,"%.*s ", 2, data + (i * 3));
-                    }
-                }
-
-                // Empty space filler.
-                if (data_len == 0)
-                {
-                    if (nc_state())
-                    {
-                        printf(     "                        ");
-                    }
-                    if (no_state())
-                    {
-                        fprintf(fw, "                        ");
-                    }
-                }
-                else if (data_len == 1)
-                {
-                    if (nc_state())
-                    {
-                        printf(     "                        ");
-                    }
-                    if (no_state())
-                    {
-                        fprintf(fw, "                        ");
-                    }
-                }
-                else
-                {
-                    if (div_by_8 != 0)
-                    {
-                        //printf("div_by_8 = %i", div_by_8);
-                        for (int i = 0; i <= (7 - div_by_8); i++)
-                        {
-
-                            if (nc_state())
-                            {
-                                printf(     "   ");
-                            }
-
-                            if (no_state())
-                            {
-                                fprintf(fw, "   ");
-                            }
-                        }
-                    }
-                }
-                //----------------------------
-                //TODO: implement. Make return string, then its easier to switch off and on..
-                //bap_parse(data, data_len);
-                //printf("%s = len %i\n",data, strlen(data));
-
-                if (nc_state())
-                {
-                    printf("|");
-                    bap_parse(data, data_len);
-                    printf(     "\n");
-                }
-                if (no_state())
-                {
-                    fprintf(fw, "|\n");
-                }
-			}
-		}
-
-		p = 0;
-		clear_str(message, 250);
-	}
-	else
-	{
-		p++;
-	}
-}
-
-
+*/
 int main(int argc, char* argv[])
 {
 
@@ -307,12 +72,7 @@ int main(int argc, char* argv[])
 
 	char value;
 
-    // TODO: this can really go away..
-    FILE* input = input_file_init();
-    FILE* test = input_p();
-
-    FILE* output = output_file_init();
-    FILE* test_o = output_p();
+    open_files();
 
     // Output header
     print_table_header();
@@ -320,18 +80,13 @@ int main(int argc, char* argv[])
 
     while (1)
 	{
-		//value = fgetc(test);
         value = fgetc(input_p());
 
 
 		if (value == EOF)
 		{
-			input_close();
-            if (no_state())
-            {
-                output_close();
-            }
-		    	break;
+			close_files();
+            break;
 		}
 		else
 		{

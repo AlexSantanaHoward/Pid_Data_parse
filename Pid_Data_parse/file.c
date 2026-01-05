@@ -10,18 +10,25 @@
 FILE *input;
 FILE *output;
 
-
+/* Returns pointer to input file.
+* @returns input file pointer.
+*/
 FILE* input_p()
 {
     return input;
 }
 
+/* Returns pointer to output file.
+* @returns output file pointer.
+*/
 FILE* output_p()
 {
     return output;
 }
 
-FILE* input_file_init()
+/*Initialises input file.
+*/
+void input_file_init()
 {
     input = fopen(file_in(), "r");
 
@@ -30,13 +37,15 @@ FILE* input_file_init()
         printf("\n Error Opening %s : File not found \n", file_in());
         exit(0);
     }
-    return input;
+    else
+    {
+        printf("\nInput file: %s\n", file_in());
+    }
 }
 
-/**Initialises output file and returns pointer.
-* @returns{ FILE* } Output file pointer.
+/**Initialises output file.
 */
-FILE* output_file_init()
+void output_file_init()
 {
     output = fopen(file_out(), "w");
 
@@ -49,8 +58,6 @@ FILE* output_file_init()
     {
         printf("Writing to: %s\n", file_out());
     }
-
-    return output;
 }
 
 /* Closes input file
@@ -67,3 +74,22 @@ void output_close(void)
     fclose(output);
 }
 
+void open_files(void)
+{
+    input_file_init();
+
+    if(no_state())
+    {
+        output_file_init();
+    }
+}
+
+void close_files(void)
+{
+    input_close();
+
+    if (no_state())
+    {
+        output_close();
+    }
+}

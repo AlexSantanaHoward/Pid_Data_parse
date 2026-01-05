@@ -55,7 +55,7 @@ static void string_data_to_array(uint8_t *buff, char* data, int len)
 }
 
 
-void bap_parse(char* data, int len)
+void bap_parse(uint8_t* data_buff, int len)
 {
 
     char return_str[100] = { 0 };
@@ -66,7 +66,7 @@ void bap_parse(char* data, int len)
     int function_id = 0;
     int payload_pointer = 0;
 
-    uint8_t data_buff[1000] = { 0 };
+    //uint8_t data_buff[1000] = { 0 };
 
     uint16_t bap_header = 0;
     uint8_t long_frame_data_length = 0;
@@ -75,7 +75,7 @@ void bap_parse(char* data, int len)
     // make sure there is a payload to parse
     if( len >= 2)
     {
-        string_data_to_array(data_buff,data, len);
+        //string_data_to_array(data_buff,data, len);
 
         #if 0
         // Check if it is a initial long BAP message
@@ -148,12 +148,12 @@ void bap_parse(char* data, int len)
         #else
 
         // Long bap message
-        if ((data_buff[0] & 0xC0) == 0x80)
+        if ((data_buff[3] & 0xC0) == 0x80)
         {
-            bap_header = bap_header_assemble(data_buff, 2);
+            bap_header = bap_header_assemble(data_buff, 5);
 
-            long_frame_index = data_buff[0] & 0x3F;
-            long_frame_data_length = data_buff[1];
+            long_frame_index = data_buff[3] & 0x3F;
+            long_frame_data_length = data_buff[4];
 
             function_id         = (bap_header >> 0) & 0x3F;
             logical_device_id   = (bap_header >> 6) & 0x3F;
@@ -164,25 +164,25 @@ void bap_parse(char* data, int len)
             //snprintf(return_str, 42, " Yes | Start | %02x | %04x | %02x | %02x | %02x | ", long_frame_index, bap_header, logical_device_id, function_id, op_code);
             printf(" Yes | Start | %02x | %02x | %04x | %02x | %02x | %02x | ", long_frame_index, long_frame_data_length, bap_header, logical_device_id, function_id, op_code);
 
-            payload_pointer = 4;
+            payload_pointer = 7;
             
         
         }
         // Long bap continuation message
-        else if((data_buff[0] & 0xC0) == 0xC0)
+        else if((data_buff[3] & 0xC0) == 0xC0)
         {
-           long_frame_index = data_buff[0] & 0x3F;
+           long_frame_index = data_buff[3] & 0x3F;
 
            //strncpy(return_str, " Yes | Cont | %02x |  --  |  --  |  --  |  --  | ", long_frame_index, bap_header, logical_device_id, function_id, op_code, 37);
            // snprintf(return_str, 47, " Yes | Cont | %02x |  --  |  --  |  --  |  --  | ", long_frame_index);
            printf(" Yes | Contn | %02x | -- | ---- | -- | -- | -- | ", long_frame_index);
 
-           payload_pointer = 1;
+           payload_pointer = 2;
         }
         // Standard message
         else
         {
-            bap_header = bap_header_assemble(data_buff, 0);
+            bap_header = bap_header_assemble(data_buff, 3);
 
             function_id         = (bap_header >> 0) & 0x3F;
             logical_device_id   = (bap_header >> 6) & 0x3F;
@@ -193,7 +193,7 @@ void bap_parse(char* data, int len)
             //snprintf(return_str, 42, "  No | ----- | -- | %04x | %02x | %02x | %02x | ", bap_header, logical_device_id, function_id, op_code);
             printf("  No | ----- | -- | -- | %04x | %02x | %02x | %02x | ", bap_header, logical_device_id, function_id, op_code);
 
-            payload_pointer = 2;
+            payload_pointer = 5;
         
         }
 
@@ -201,7 +201,7 @@ void bap_parse(char* data, int len)
 
         for (int i = 0; i <= 6; i++)
         {
-            if (i <= ((len - 3) - payload_pointer))
+            if (i <= ((data_buff[0]) - payload_pointer))
             {
                 //strcat(return_str, data_buff[i]);
                 printf("%02x ", data_buff[i + payload_pointer]);

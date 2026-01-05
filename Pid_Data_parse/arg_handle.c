@@ -110,7 +110,6 @@ void arg_handle(int argc, char* argv[])
 
                 // Set input file name
                 snprintf(input_file, strlen(argv[i]) + 1, "%s", argv[i]);
-                printf("\nInput file: %s\n", input_file);
 
                 // Set output file name
                 snprintf(output_file, strlen(argv[i]) + 1, "%s", argv[i]);
