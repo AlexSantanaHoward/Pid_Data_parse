@@ -11,6 +11,7 @@ char* pulse_option      = "-pv";
 char* console_option    = "-nc";
 char* output_option     = "-no";
 char* bap_parse_option  = "-bap";
+char* can_filter_option = "-can";
 
 char* out_file_end = "_clean.txt";
 
@@ -95,7 +96,8 @@ void arg_handle(int argc, char* argv[])
         printf(" -i <Input_File.txt>\n");
         printf(" -nc  = No console output\n");
         printf(" -nc  = No output file\n");
-        printf(" -bap = Enable BAP parse\n\n");
+        printf(" -bap = Enable BAP parse\n");
+        printf(" -can = Filter by CAN ID\n\n");
         exit(0);
     }
     else
@@ -137,6 +139,31 @@ void arg_handle(int argc, char* argv[])
             else if (strcmp(bap_parse_option, argv[i]) == 0)
             {
                 bap_option = 1;
+            }
+            else if (strcmp(can_filter_option, argv[i]) == 0)
+            {
+                // Make sure that there is an argument after
+                if(i < argc)
+                {
+                    // Cycle through the args after -can to find IDs
+                    for (int r = 1; (r + i) >= argc ; r++)
+                    {
+                        // If next arg is argument'-xx' break
+                        if (argv[i + r][0] != '-')
+                        {
+                            //filter_add(CAN,argv[i + r])
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    printf("\nError insufficient filter arguments\n");
+                    exit(0);
+                }
             }
         }
     }

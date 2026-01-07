@@ -177,7 +177,7 @@ void bap_parse(uint8_t* data_buff, int len)
            // snprintf(return_str, 47, " Yes | Cont | %02x |  --  |  --  |  --  |  --  | ", long_frame_index);
            printf(" Yes | Contn | %02x | -- | ---- | -- | -- | -- | ", long_frame_index);
 
-           payload_pointer = 2;
+           payload_pointer = 4;
         }
         // Standard message
         else

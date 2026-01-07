@@ -8,9 +8,14 @@
 #include "can_ids.h"
 #include "file.h"
 
+#define CAN 1
 
 #pragma warning(disable : 4996)
 
+
+static int can_filter_index = 0;
+
+static uint16_t can_filter[10];
 
 void print_table_header(void)
 {
@@ -184,4 +189,35 @@ void output_message(uint8_t* data)
         fprintf(output_p(), "\n");
     }
 
+}
+
+void filter_add(int type, char* id)
+{
+
+    switch(type)
+    {
+    
+        case(CAN):
+
+            can_filter[can_filter_index] = str_to_hex(id);
+            can_filter_index = can_filter_index + 1;
+
+        break;
+    
+    }
+}
+
+// TODO:Should really incorporate str_to_hex and this function
+static int str_to_hex(char* str)
+{
+    int x;
+
+    if (sscanf(str, "%04x", &x) != EOF)
+    {
+        return x;
+    }
+    else
+    {
+        return 0;
+    }
 }
