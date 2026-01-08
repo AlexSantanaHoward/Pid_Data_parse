@@ -11,4 +11,10 @@ char* format_message_data(uint8_t* data);
 
 void output_message(uint8_t* data);
 
+void filter_add(int type, char* id);
+
+static int str_to_hex(char* str);
+
+int filter_check(uint8_t* data);
+
 #endif

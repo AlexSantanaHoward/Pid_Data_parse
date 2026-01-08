@@ -19,52 +19,8 @@ char* clean_txt = "_clean.txt";
 char Fout_name[20];
 
 FILE* fw;
-/*
-static void string_replace_char(char* str, char current_c, char new_c)
-{
-	for (int i = 0; i <= 1000; i++)
-	{
-		if (str[i] == current_c)
-		{
-			str[i] = new_c;
-		}
-		else if (str[i] == '\0')
-		{
-			break;
-		}
-	}
-}
 
-static int str_to_hex(char* str)
-{
-	int x;
 
-	if (sscanf(str, "%x", &x) != EOF) 
-	{
-		return x;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-static void clear_str(char* str, int len)
-{
-	for (int i = 0; i <= len; i++)
-	{
-		str[i] = '\0';
-	}
-}
-
-static void clear_buff(uint8_t *buff, int len)
-{
-    for (int i = 0; i <= len; i++)
-    {
-        buff[i] = 0;
-    }
-}
-*/
 int main(int argc, char* argv[])
 {
 

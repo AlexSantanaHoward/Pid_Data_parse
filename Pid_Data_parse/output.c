@@ -19,10 +19,7 @@ static uint16_t can_filter[10];
 
 void print_table_header(void)
 {
-/*
-    FILE *out;
-    out = output_p();
-    */
+
     if (nc_state())
     {
         if (bap_state())
@@ -137,58 +134,61 @@ void output_message(uint8_t* data)
     uint16_t CAN_ID = 0;
     uint16_t msg_length = 0;
 
-    // Deal with pesky non BAP format i.e less than 2.
-    if (data[0] >= 2)
+    if (filter_check(data) == 1)
     {
-        msg_length = (data[0] - 2);
-    }
-    else
-    {
-        msg_length = data[0];
-    }
-
-    CAN_ID = (data[1] << 8u) | data[2];
-
-    if(nc_state())
-    {
-        // Print data length 
-        // Should this be an int
-        printf("  %02x |", msg_length);
-
-        // Print CAN ID
-        printf(" %04x |", CAN_ID);
-
-        // Print CAN ID Name
-        printf(" %s| ", check_id_name(CAN_ID));
-
-        // Print Message
-        printf("%s", format_message_data(data));
-
-        if(bap_state())
+        // Deal with pesky non BAP format i.e less than 2.
+        if (data[0] >= 2)
         {
-            bap_parse(data, msg_length);
+            msg_length = (data[0] - 2);
+        }
+        else
+        {
+            msg_length = data[0];
         }
 
-        printf("\n");
+        CAN_ID = (data[1] << 8u) | data[2];
+
+        if (nc_state())
+        {
+            // Print data length 
+            // Should this be an int
+            printf("  %02x |", msg_length);
+
+            // Print CAN ID
+            printf(" %04x |", CAN_ID);
+
+            // Print CAN ID Name
+            printf(" %s| ", check_id_name(CAN_ID));
+
+            // Print Message
+            printf("%s", format_message_data(data));
+
+            if (bap_state())
+            {
+                bap_parse(data, msg_length);
+            }
+
+            printf("\n");
+
+        }
+        if (no_state())
+        {
+            // Print data length 
+            // Should this be an int
+            fprintf(output_p(), "  %02x |", msg_length);
+
+            // Print CAN ID
+            fprintf(output_p(), " %04x |", CAN_ID);
+
+            // Print CAN ID Name
+            fprintf(output_p(), " %s| ", check_id_name(CAN_ID));
+
+            // Print Message
+            fprintf(output_p(), "%s", format_message_data(data));
+            fprintf(output_p(), "\n");
+        }
 
     }
-    if(no_state())
-    {
-        // Print data length 
-        // Should this be an int
-        fprintf(output_p(), "  %02x |", msg_length);
-
-        // Print CAN ID
-        fprintf(output_p(), " %04x |", CAN_ID);
-
-        // Print CAN ID Name
-        fprintf(output_p(), " %s| ", check_id_name(CAN_ID));
-
-        // Print Message
-        fprintf(output_p(), "%s", format_message_data(data));
-        fprintf(output_p(), "\n");
-    }
-
 }
 
 void filter_add(int type, char* id)
@@ -200,7 +200,9 @@ void filter_add(int type, char* id)
         case(CAN):
 
             can_filter[can_filter_index] = str_to_hex(id);
+            printf("added %04x to CAN filter\n", can_filter[can_filter_index]);
             can_filter_index = can_filter_index + 1;
+            
 
         break;
     
@@ -215,6 +217,44 @@ static int str_to_hex(char* str)
     if (sscanf(str, "%04x", &x) != EOF)
     {
         return x;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int filter_check(uint8_t* data)
+{
+    // This will count up the amount of filter TRUEs.
+    int verify = 0;
+
+    uint16_t can_id = 0;
+
+    // CAN Check
+    // If filter has been specified.
+    if (can_filter_index != 0)
+    {
+        can_id = (data[1] << 8) | data[2];
+
+        for (int i = 0; i <= 10; i++)
+        {
+            if (can_id == can_filter[i])
+            {
+                verify++;
+                break;
+            }
+        }
+    
+    }
+    else 
+    {
+        verify++;
+    }
+
+    if (verify >= 1)
+    {
+        return 1;
     }
     else
     {

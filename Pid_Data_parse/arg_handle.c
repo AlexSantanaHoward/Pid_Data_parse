@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "arg_handle.h"
+#include "output.h"
 
 #pragma warning(disable : 4996)
 
@@ -105,7 +107,6 @@ void arg_handle(int argc, char* argv[])
         // Start at one to avoid application name
         for(int i = 1; i < argc; i++)
         {
-
             if(strcmp(input_option,argv[i]) == 0 && argc > i)
             {            
                 i++;
@@ -146,22 +147,22 @@ void arg_handle(int argc, char* argv[])
                 if(i < argc)
                 {
                     // Cycle through the args after -can to find IDs
-                    for (int r = 1; (r + i) >= argc ; r++)
+                    for (int r = 1; (r + i) < argc ; r++)
                     {
                         // If next arg is argument'-xx' break
                         if (argv[i + r][0] != '-')
-                        {
-                            //filter_add(CAN,argv[i + r])
+                        {                            
+                            filter_add(1, argv[i + r]);
                         }
                         else
-                        {
+                        {                           
                             break;
                         }
                     }
                 }
                 else
                 {
-                    printf("\nError insufficient filter arguments\n");
+                    printf("\nError! insufficient CAN filter arguments\n");
                     exit(0);
                 }
             }
