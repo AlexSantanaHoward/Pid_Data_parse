@@ -3,6 +3,10 @@
 #ifndef INC_OUTPUT_H_
 #define INC_OUTPUT_H_
 
+#define CAN 1
+#define FCT 2
+#define LSG 3
+
 void print_table_header(void);
 
 static char* concatenate_hex(uint8_t hex);

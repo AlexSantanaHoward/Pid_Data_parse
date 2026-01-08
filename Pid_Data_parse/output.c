@@ -8,14 +8,18 @@
 #include "can_ids.h"
 #include "file.h"
 
-#define CAN 1
 
 #pragma warning(disable : 4996)
 
 
 static int can_filter_index = 0;
+static uint16_t can_filter[11];
 
-static uint16_t can_filter[10];
+static int fct_filter_index = 0;
+static uint8_t fct_filter[11];
+
+static int lsg_filter_index = 0;
+static uint8_t lsg_filter[11];
 
 void print_table_header(void)
 {
@@ -200,9 +204,24 @@ void filter_add(int type, char* id)
         case(CAN):
 
             can_filter[can_filter_index] = str_to_hex(id);
-            printf("added %04x to CAN filter\n", can_filter[can_filter_index]);
+            printf("added %04x to CAN ID filter\n", can_filter[can_filter_index]);
             can_filter_index = can_filter_index + 1;
             
+        break;
+
+        case(FCT):
+
+            fct_filter[fct_filter_index] = (str_to_hex(id) & 0xff);
+            printf("added %02x to Function ID filter\n", fct_filter[fct_filter_index]);
+            fct_filter_index = fct_filter_index + 1;
+
+        break;
+
+        case(LSG):
+
+            lsg_filter[lsg_filter_index] = str_to_hex(id);
+            printf("added %02x to Logical Device filter\n", lsg_filter[lsg_filter_index]);
+            lsg_filter_index = lsg_filter_index + 1;
 
         break;
     
@@ -230,6 +249,8 @@ int filter_check(uint8_t* data)
     int verify = 0;
 
     uint16_t can_id = 0;
+    uint8_t  fct_id = 0;
+    uint8_t  lsg_id = 0;
 
     // CAN Check
     // If filter has been specified.
@@ -252,7 +273,76 @@ int filter_check(uint8_t* data)
         verify++;
     }
 
-    if (verify >= 1)
+    // FCT Check
+    // If filter has been specified.
+    if (fct_filter_index != 0)
+    {
+        if ((data[3] & 0xC0) == 0x80)
+        {
+           fct_id = (data[6] >> 0) & 0x3F;
+        }
+        else if ((data[3] & 0xC0) == 0xC0)
+        {
+            // It must be a long BAP message, thus no function ID
+            fct_id = 0xFFF;
+        }
+        else
+        {
+            fct_id = (data[4] >> 0) & 0x3F;
+        }
+
+        for (int i = 0; i <= 10; i++)
+        {
+            //if (fct_id == 0x28)
+            if (fct_id == fct_filter[i])
+            {
+                printf("\nfct_id = %02x fct_filt = %02x\n", fct_id, fct_filter[i]);
+                verify++;
+                break;
+            }
+        }
+
+    }
+    else
+    {
+        verify++;
+    }
+
+    // LSG Check
+    // If filter has been specified.
+    if (lsg_filter_index != 0)
+    {
+        if ((data[3] & 0xC0) == 0x80)
+        {
+            lsg_id = (data[5] >> 6) & 0x3F;
+        }
+        else if ((data[3] & 0xC0) == 0xC0)
+        {
+            // It must be a long BAP message, thus no function ID
+            lsg_id = 0xFFF;
+        }
+        else
+        {
+            lsg_id = (data[3] >> 6) & 0x3F;
+        }
+
+        for (int i = 0; i <= 10; i++)
+        {
+            if (lsg_id == lsg_filter[i])
+            {
+                verify++;
+                break;
+            }
+        }
+
+    }
+    else
+    {
+        verify++;
+    }
+
+
+    if (verify == 3)
     {
         return 1;
     }

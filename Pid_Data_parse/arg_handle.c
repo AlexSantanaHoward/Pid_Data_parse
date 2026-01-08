@@ -14,6 +14,8 @@ char* console_option    = "-nc";
 char* output_option     = "-no";
 char* bap_parse_option  = "-bap";
 char* can_filter_option = "-can";
+char* fct_filter_option = "-fct";
+char* lsg_filter_option = "-lsg";
 
 char* out_file_end = "_clean.txt";
 
@@ -99,7 +101,9 @@ void arg_handle(int argc, char* argv[])
         printf(" -nc  = No console output\n");
         printf(" -nc  = No output file\n");
         printf(" -bap = Enable BAP parse\n");
-        printf(" -can = Filter by CAN ID\n\n");
+        printf(" -can = Filter by CAN ID\n");
+        printf(" -fct = Filter by Function ID\n");
+        printf(" -lsg = Filter by logical device ID\n\n");
         exit(0);
     }
     else
@@ -152,7 +156,7 @@ void arg_handle(int argc, char* argv[])
                         // If next arg is argument'-xx' break
                         if (argv[i + r][0] != '-')
                         {                            
-                            filter_add(1, argv[i + r]);
+                            filter_add(CAN, argv[i + r]);
                         }
                         else
                         {                           
@@ -163,6 +167,56 @@ void arg_handle(int argc, char* argv[])
                 else
                 {
                     printf("\nError! insufficient CAN filter arguments\n");
+                    exit(0);
+                }
+            }
+            else if (strcmp(fct_filter_option, argv[i]) == 0)
+            {
+                // Make sure that there is an argument after
+                if (i < argc)
+                {
+                    // Cycle through the args after -can to find IDs
+                    for (int r = 1; (r + i) < argc; r++)
+                    {
+                        // If next arg is argument'-xx' break
+                        if (argv[i + r][0] != '-')
+                        {
+                            filter_add(FCT, argv[i + r]);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    printf("\nError! insufficient Function filter arguments\n");
+                    exit(0);
+                }
+            }
+            else if (strcmp(lsg_filter_option, argv[i]) == 0)
+            {
+                // Make sure that there is an argument after
+                if (i < argc)
+                {
+                    // Cycle through the args after -can to find IDs
+                    for (int r = 1; (r + i) < argc; r++)
+                    {
+                        // If next arg is argument'-xx' break
+                        if (argv[i + r][0] != '-')
+                        {
+                            filter_add(LSG, argv[i + r]);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    printf("\nError! insufficient Logical device filter arguments\n");
                     exit(0);
                 }
             }
