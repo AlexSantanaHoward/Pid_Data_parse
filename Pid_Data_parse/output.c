@@ -211,7 +211,7 @@ void filter_add(int type, char* id)
 
         case(FCT):
 
-            fct_filter[fct_filter_index] = (str_to_hex(id) & 0xff);
+            fct_filter[fct_filter_index] = (str_to_02_hex(id) & 0x3f);
             printf("added %02x to Function ID filter\n", fct_filter[fct_filter_index]);
             fct_filter_index = fct_filter_index + 1;
 
@@ -219,7 +219,7 @@ void filter_add(int type, char* id)
 
         case(LSG):
 
-            lsg_filter[lsg_filter_index] = str_to_hex(id);
+            lsg_filter[lsg_filter_index] = (str_to_02_hex(id) & 0x3F);
             printf("added %02x to Logical Device filter\n", lsg_filter[lsg_filter_index]);
             lsg_filter_index = lsg_filter_index + 1;
 
@@ -234,6 +234,21 @@ static int str_to_hex(char* str)
     int x;
 
     if (sscanf(str, "%04x", &x) != EOF)
+    {
+        return x;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// TODO:Should really incorporate str_to_hex and this function
+static int str_to_02_hex(char* str)
+{
+    int x;
+
+    if (sscanf(str, "%02x", &x) != EOF)
     {
         return x;
     }
@@ -258,7 +273,7 @@ int filter_check(uint8_t* data)
     {
         can_id = (data[1] << 8) | data[2];
 
-        for (int i = 0; i <= 10; i++)
+        for (int i = 0; i <= can_filter_index; i++)
         {
             if (can_id == can_filter[i])
             {
@@ -266,7 +281,6 @@ int filter_check(uint8_t* data)
                 break;
             }
         }
-    
     }
     else 
     {
@@ -284,24 +298,21 @@ int filter_check(uint8_t* data)
         else if ((data[3] & 0xC0) == 0xC0)
         {
             // It must be a long BAP message, thus no function ID
-            fct_id = 0xFFF;
+            fct_id = 0xFF;
         }
         else
         {
             fct_id = (data[4] >> 0) & 0x3F;
         }
 
-        for (int i = 0; i <= 10; i++)
+        for (int i = 0; i < fct_filter_index; i++)
         {
-            //if (fct_id == 0x28)
             if (fct_id == fct_filter[i])
             {
-                printf("\nfct_id = %02x fct_filt = %02x\n", fct_id, fct_filter[i]);
                 verify++;
                 break;
             }
         }
-
     }
     else
     {
@@ -314,19 +325,19 @@ int filter_check(uint8_t* data)
     {
         if ((data[3] & 0xC0) == 0x80)
         {
-            lsg_id = (data[5] >> 6) & 0x3F;
+            lsg_id = ((data[5] << 2 ) & 0x3C) | ((data[6] >> 6) & 0x03);
         }
         else if ((data[3] & 0xC0) == 0xC0)
         {
-            // It must be a long BAP message, thus no function ID
-            lsg_id = 0xFFF;
+            // It must be a long BAP message, thus no logical device ID
+            lsg_id = 0xFF;
         }
         else
         {
-            lsg_id = (data[3] >> 6) & 0x3F;
+            lsg_id = ((data[3] << 2) & 0x3C) | ((data[4] >> 6) & 0x03);
         }
 
-        for (int i = 0; i <= 10; i++)
+        for (int i = 0; i < lsg_filter_index; i++)
         {
             if (lsg_id == lsg_filter[i])
             {
@@ -334,14 +345,13 @@ int filter_check(uint8_t* data)
                 break;
             }
         }
-
     }
     else
     {
         verify++;
     }
 
-
+    //printf("Verify = %i\n", verify);
     if (verify == 3)
     {
         return 1;
