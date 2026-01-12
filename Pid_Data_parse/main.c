@@ -23,6 +23,10 @@ FILE* fw;
 
 int main(int argc, char* argv[])
 {
+    if(terminal_init() != 0)
+    {
+        exit(0);
+    }
 
     arg_handle(argc, argv);
 
@@ -57,6 +61,8 @@ int main(int argc, char* argv[])
 
 		}
 	}
+
+    terminal_fin();
 }
 
 

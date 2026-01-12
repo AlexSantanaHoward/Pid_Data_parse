@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ansi.c" />
     <ClCompile Include="arg_handle.c" />
     <ClCompile Include="bap.c" />
     <ClCompile Include="can_ids.c" />
@@ -136,6 +137,7 @@
     <ClCompile Include="output.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ansi.h" />
     <ClInclude Include="arg_handle.h" />
     <ClInclude Include="bap.h" />
     <ClInclude Include="can_ids.h" />

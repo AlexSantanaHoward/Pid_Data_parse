@@ -7,6 +7,7 @@
 #include "arg_handle.h"
 #include "can_ids.h"
 #include "file.h"
+#include "ansi.h"
 
 
 #pragma warning(disable : 4996)
@@ -21,11 +22,19 @@ static uint8_t fct_filter[11];
 static int lsg_filter_index = 0;
 static uint8_t lsg_filter[11];
 
+static int dif_index = 0;
+static uint16_t dif_values[23];
+
 void print_table_header(void)
 {
 
     if (nc_state())
     {
+        //ansi_bold();
+        ansi_clear();
+        ansi_invert();
+        ansi_cursor_y_x(0,0);
+
         if (bap_state())
         {
             printf("\n___________________________________________________________________________________________________________________________|\n");
@@ -40,6 +49,7 @@ void print_table_header(void)
             printf(" Len |  ID  |     Name      |         Message         |\n");
             printf("-----|------|---------------|-------------------------|\n");
         }
+        ansi_reset();
     }
     if (no_state())
     {
@@ -138,6 +148,8 @@ void output_message(uint8_t* data)
     uint16_t CAN_ID = 0;
     uint16_t msg_length = 0;
 
+    int value_found = 0;
+
     if (filter_check(data) == 1)
     {
         // Deal with pesky non BAP format i.e less than 2.
@@ -154,6 +166,32 @@ void output_message(uint8_t* data)
 
         if (nc_state())
         {
+
+            if (dif_state())
+            {
+
+                for(int i = 0; i <= dif_index; i++)
+                {
+                    if(dif_values[i] == CAN_ID)
+                    {
+                        value_found = 1;
+                        ansi_cursor_y_x(i + 6, 0);
+                        break;
+                    }
+                    else
+                    {
+                        value_found = 0;
+                    }
+                }
+
+                if(value_found == 0)
+                {
+                    dif_index++;
+                    dif_values[dif_index] = CAN_ID;
+                    ansi_cursor_y_x(dif_index + 6, 0);
+                }
+
+            }
             // Print data length 
             // Should this be an int
             printf("  %02x |", msg_length);
@@ -189,6 +227,11 @@ void output_message(uint8_t* data)
             }
             printf("\n");
 
+            if (dif_state())
+            {
+                ansi_cursor_y_x(dif_index + 8,0);
+            }
+
         }
         if (no_state())
         {
@@ -209,6 +252,7 @@ void output_message(uint8_t* data)
 
     }
 }
+
 
 void filter_add(int type, char* id)
 {
