@@ -171,7 +171,22 @@ void output_message(uint8_t* data)
             {
                 bap_parse(data, msg_length);
             }
+            if (wip_state())
+            {
+                if (CAN_ID == 0x5b03)
+                {
+                    if (data[3] <= 0x08)
+                    {
+                        printf(" ignition  ON |");
+                        printf(" rpm = %04i |", (256 * (data[4] + data[5])) / 20);
+                        printf(" Temp1 = %i |", data[6] - 40);
+                    }
+                    else {
+                        printf(" ignition OFF |");
+                    }
 
+                }
+            }
             printf("\n");
 
         }

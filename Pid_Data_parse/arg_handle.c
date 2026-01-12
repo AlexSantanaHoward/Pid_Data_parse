@@ -13,6 +13,7 @@ char* pulse_option      = "-pv";
 char* console_option    = "-nc";
 char* output_option     = "-no";
 char* bap_parse_option  = "-bap";
+char* wip_parse_option =  "-wip";
 char* can_filter_option = "-can";
 char* fct_filter_option = "-fct";
 char* lsg_filter_option = "-lsg";
@@ -26,6 +27,8 @@ static int pv_option;
 static int nc_option;
 static int no_option;
 static int bap_option;
+static int wip_option;
+
 
 
 static int string_find_last_char(char* str, char c)
@@ -74,6 +77,11 @@ int bap_state(void)
     return bap_option;
 }
 
+int wip_state(void)
+{
+    return wip_option;
+}
+
 
 
 void arg_handle(int argc, char* argv[])
@@ -83,6 +91,9 @@ void arg_handle(int argc, char* argv[])
 
     // Intialize bap_option as 0 and allow arg to overide.
     bap_option = 0;
+
+    // Intialize bap_option as 0 and allow arg to overide.
+    wip_option = 0;
 
     // Intialize nc_option as 1 and allow arg to overide.
     nc_option = 1;
@@ -101,6 +112,7 @@ void arg_handle(int argc, char* argv[])
         printf(" -nc  = No console output\n");
         printf(" -nc  = No output file\n");
         printf(" -bap = Enable BAP parse\n");
+        printf(" -wip = Enable WIP parse\n");
         printf(" -can = Filter by CAN ID\n");
         printf(" -fct = Filter by Function ID\n");
         printf(" -lsg = Filter by logical device ID\n\n");
@@ -144,6 +156,10 @@ void arg_handle(int argc, char* argv[])
             else if (strcmp(bap_parse_option, argv[i]) == 0)
             {
                 bap_option = 1;
+            }
+            else if (strcmp(wip_parse_option, argv[i]) == 0)
+            {
+                wip_option = 1;
             }
             else if (strcmp(can_filter_option, argv[i]) == 0)
             {
