@@ -44,10 +44,19 @@ void print_table_header(void)
         }
         else
         {
+            #if 0
+
             printf("\n_______________________________________________________\n");
             printf(" Msg | CAN  |      CAN      |           BAP           |\n");
             printf(" Len |  ID  |     Name      |         Message         |\n");
             printf("-----|------|---------------|-------------------------|\n");
+
+            #else
+            printf("\n Msg \33(0x\33(B CAN  \33(0x\33(B      CAN      \33(0x\33(B           BAP           \33(0x\33(B\n");
+            printf(  " Len \33(0x\33(B  ID  \33(0x\33(B     Name      \33(0x\33(B         Message         \33(0x\33(B\n");
+
+
+            #endif
         }
         ansi_reset();
     }

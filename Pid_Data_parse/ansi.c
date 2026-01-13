@@ -75,6 +75,16 @@ void ansi_cursor_y_x(int y, int x)
     printf("%i;%iH", y, x);
 }
 
+void ansi_verticle_line()
+{
+    printf("\33(0x\33(B");
+}
+
+char* ansi_verticle_line_str()
+{
+    return "\33(0x\33(B";
+}
+
 void ansi_clear(void)
 {
     printf("\33[2J");

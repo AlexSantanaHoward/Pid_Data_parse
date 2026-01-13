@@ -15,6 +15,10 @@ void ansi_invert(void);
 
 void ansi_cursor_y_x(int y, int x);
 
+void ansi_verticle_line();
+
+char* ansi_verticle_line_str();
+
 void ansi_clear(void);
 
 #endif
