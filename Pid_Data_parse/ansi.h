@@ -19,6 +19,8 @@ void ansi_verticle_line();
 
 char* ansi_verticle_line_str();
 
+void draw_box(int y, int x, int rows, int column);
+
 void ansi_clear(void);
 
 #endif

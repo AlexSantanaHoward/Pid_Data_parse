@@ -85,6 +85,20 @@ char* ansi_verticle_line_str()
     return "\33(0x\33(B";
 }
 
+void draw_box(int y, int x, int rows, int column)
+{
+    ansi_cursor_y_x(y, x);
+
+    for (int i = 1; i <= rows; i++)
+    {
+        //printf("%*c", column, ' ');
+        ansi_cursor_y_x((y + i), x);
+        printf("%*c", column, ' ');
+        
+        
+    }
+}
+
 void ansi_clear(void)
 {
     printf("\33[2J");

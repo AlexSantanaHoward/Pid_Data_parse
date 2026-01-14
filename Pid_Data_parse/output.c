@@ -52,9 +52,24 @@ void print_table_header(void)
             printf("-----|------|---------------|-------------------------|\n");
 
             #else
-            printf("\n Msg \33(0x\33(B CAN  \33(0x\33(B      CAN      \33(0x\33(B           BAP           \33(0x\33(B\n");
-            printf(  " Len \33(0x\33(B  ID  \33(0x\33(B     Name      \33(0x\33(B         Message         \33(0x\33(B\n");
+            //printf("\n Msg \33(0x\33(B CAN  \33(0x\33(B      CAN      \33(0x\33(B           BAP           \33(0x\33(B\n");
+            //printf(  " Len \33(0x\33(B  ID  \33(0x\33(B     Name      \33(0x\33(B         Message         \33(0x\33(B\n");
+            draw_box(0,0,2,55);
 
+            ansi_cursor_y_x(0, 6);
+            printf("\33(0"); // Set terminal display mode to graphic
+            printf("x\33[B\33[Dx");
+
+            ansi_cursor_y_x(0, 13);
+            printf("x\33[B\33[Dx");
+            ansi_cursor_y_x(0, 29);
+            printf("x\33[B\33[Dx");
+            ansi_cursor_y_x(0, 55);
+            printf("x\33[B\33[Dx");
+
+            printf("\33(B");
+            ansi_cursor_y_x(0, 0);
+;
 
             #endif
         }
@@ -184,7 +199,7 @@ void output_message(uint8_t* data)
                     if(dif_values[i] == CAN_ID)
                     {
                         value_found = 1;
-                        ansi_cursor_y_x(i + 6, 0);
+                        ansi_cursor_y_x(i + 2, 0);
                         break;
                     }
                     else
@@ -197,7 +212,7 @@ void output_message(uint8_t* data)
                 {
                     dif_index++;
                     dif_values[dif_index] = CAN_ID;
-                    ansi_cursor_y_x(dif_index + 6, 0);
+                    ansi_cursor_y_x(dif_index + 2, 0);
                 }
 
             }
