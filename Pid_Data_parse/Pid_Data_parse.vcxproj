@@ -135,6 +135,7 @@
     <ClCompile Include="Input.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="output.c" />
+    <ClCompile Include="serial.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ansi.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="file.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="output.h" />
+    <ClInclude Include="serial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

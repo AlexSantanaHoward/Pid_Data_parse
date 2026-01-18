@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
 
     open_files();
 
+    serial_init();
+
     // Output header
     print_table_header();
 
@@ -63,6 +65,8 @@ int main(int argc, char* argv[])
 	}
 
     terminal_fin();
+    serial_end();
+
 }
 
 
