@@ -14,6 +14,10 @@ int pv_state(void);
 int nc_state(void);
 int no_state(void);
 int bap_state(void);
+int wip_state(void);
+int dif_state(void);
+int com_state(void);
+
 
 void arg_handle(int argc, char* argv[]);
 

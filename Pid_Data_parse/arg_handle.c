@@ -9,6 +9,7 @@
 #pragma warning(disable : 4996)
 
 char* input_option      = "-i";
+char* com_input_option  = "-com";
 char* pulse_option      = "-pv";
 char* console_option    = "-nc";
 char* output_option     = "-no";
@@ -24,6 +25,7 @@ char* out_file_end = "_clean.txt";
 static char input_file[250];
 static char output_file[250];
 
+static int com_option;
 static int pv_option;
 static int nc_option;
 static int no_option;
@@ -89,6 +91,11 @@ int dif_state(void)
     return dif_option;
 }
 
+int com_state(void)
+{
+    return com_option;
+}
+
 
 
 void arg_handle(int argc, char* argv[])
@@ -121,7 +128,8 @@ void arg_handle(int argc, char* argv[])
         printf(" Error insufficient arguments\x1b[m\n\n");
 
         printf("\x1b[38;5;172m"); // Set Text to orange
-        printf(" -i <Input_File.txt>\n");
+        printf(" -i     <Input_File.txt>\n");
+        printf(" -com = assign com port input\n");
         printf(" -nc  = No console output\n");
         printf(" -nc  = No output file\n");
         printf(" -bap = Enable BAP parse\n");
@@ -157,6 +165,24 @@ void arg_handle(int argc, char* argv[])
                     output_file[r + last_period] = out_file_end[r];
                 }              
             }
+            else if (strcmp(com_input_option, argv[i]) == 0)
+            {
+                // Make sure that there is an argument after
+                if (i < argc)
+                {
+                    if(sscanf(argv[i + 1], "%i", &com_option) == EOF)
+                    {
+                        printf("\n\33[31m\nError! incorrect COM arguments <%s>\x1b[m\n", argv[i + 1]);
+                        exit(0);
+                    }
+                }
+                else
+                {
+                    printf("\n\33[31m\nError! incorrect COM arguments\x1b[m\n");
+                    exit(0);
+                }
+            }
+
             else if(strcmp(pulse_option, argv[i]) == 0)
             {
                 pv_option = 1;
