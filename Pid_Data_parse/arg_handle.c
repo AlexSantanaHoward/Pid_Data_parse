@@ -9,6 +9,7 @@
 #pragma warning(disable : 4996)
 
 char* input_option      = "-i";
+char* output_file_name  = "-o";
 char* com_input_option  = "-com";
 char* pulse_option      = "-pv";
 char* console_option    = "-nc";
@@ -25,6 +26,7 @@ char* out_file_end = "_clean.txt";
 static char input_file[250];
 static char output_file[250];
 
+static int output_defined;
 static int com_option;
 static int pv_option;
 static int nc_option;
@@ -129,6 +131,7 @@ void arg_handle(int argc, char* argv[])
 
         printf("\x1b[38;5;172m"); // Set Text to orange
         printf(" -i     <Input_File.txt>\n");
+        printf(" -o     <Output_File.txt>\n");
         printf(" -com = assign com port input\n");
         printf(" -nc  = No console output\n");
         printf(" -nc  = No output file\n");
@@ -154,16 +157,33 @@ void arg_handle(int argc, char* argv[])
                 // Set input file name
                 snprintf(input_file, strlen(argv[i]) + 1, "%s", argv[i]);
 
-                // Set output file name
-                snprintf(output_file, strlen(argv[i]) + 1, "%s", argv[i]);
-
-                // Modify output file name
-                last_period = string_find_last_char(output_file, '.');
-           
-                for(int r = 0; r <= strlen(out_file_end); r++)
+                if(output_defined == 0)
                 {
-                    output_file[r + last_period] = out_file_end[r];
-                }              
+                    // Set output file name
+                    snprintf(output_file, strlen(argv[i]) + 1, "%s", argv[i]);
+
+                    // Modify output file name
+                    last_period = string_find_last_char(output_file, '.');
+           
+                    for(int r = 0; r <= strlen(out_file_end); r++)
+                    {
+                        output_file[r + last_period] = out_file_end[r];
+                    }     
+                }
+            }
+            else if (strcmp(output_file_name, argv[i]) == 0 && argc > i)
+            {
+                // Make sure that there is an argument after
+                if (i < argc)
+                {
+                    snprintf(output_file, strlen(argv[i + 1]) + 1, "%s", argv[i + 1]);
+                    output_defined = 1;
+                }
+                else
+                {
+                    printf("\n\33[31m\nError! insufficient arguments\x1b[m\n");
+                    exit(0);
+                }
             }
             else if (strcmp(com_input_option, argv[i]) == 0)
             {
