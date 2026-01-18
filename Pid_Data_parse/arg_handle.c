@@ -25,9 +25,10 @@ char* out_file_end = "_clean.txt";
 
 static char input_file[250];
 static char output_file[250];
+static char com_port[250];
 
 static int output_defined;
-static int com_option;
+//static int com_option;
 static int pv_option;
 static int nc_option;
 static int no_option;
@@ -93,9 +94,9 @@ int dif_state(void)
     return dif_option;
 }
 
-int com_state(void)
+char* com_address(void)
 {
-    return com_option;
+    return com_port;
 }
 
 
@@ -192,11 +193,7 @@ void arg_handle(int argc, char* argv[])
                 // Make sure that there is an argument after
                 if (i < argc)
                 {
-                    if(sscanf(argv[i + 1], "%i", &com_option) == EOF)
-                    {
-                        printf("\n\33[31m\nError! incorrect COM arguments <%s>\x1b[m\n", argv[i + 1]);
-                        exit(0);
-                    }
+                    snprintf(com_port, strlen(argv[i]) + 1, "%s", argv[i + 1]);
                 }
                 else
                 {
