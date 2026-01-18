@@ -117,16 +117,21 @@ void arg_handle(int argc, char* argv[])
     if(argc <= 1)
     {
         // print help message
-        printf("\nError insufficient arguments\n");
+        printf("\n\33[31m"); // Set text to Red
+        printf(" Error insufficient arguments\x1b[m\n\n");
+
+        printf("\x1b[38;5;172m"); // Set Text to orange
         printf(" -i <Input_File.txt>\n");
         printf(" -nc  = No console output\n");
         printf(" -nc  = No output file\n");
         printf(" -bap = Enable BAP parse\n");
         printf(" -wip = Enable WIP parse\n");
-        printf(" -dif = Enable fifferential output\n");
+        printf(" -dif = Enable differential output\n");
         printf(" -can = Filter by CAN ID\n");
         printf(" -fct = Filter by Function ID\n");
         printf(" -lsg = Filter by logical device ID\n\n");
+
+        printf("\x1b[m"); // Reset terminal colours
         exit(0);
     }
     else
@@ -197,7 +202,7 @@ void arg_handle(int argc, char* argv[])
                 }
                 else
                 {
-                    printf("\nError! insufficient CAN filter arguments\n");
+                    printf("\n\33[31m\nError! insufficient CAN filter arguments\x1b[m\n");
                     exit(0);
                 }
             }
@@ -222,7 +227,7 @@ void arg_handle(int argc, char* argv[])
                 }
                 else
                 {
-                    printf("\nError! insufficient Function filter arguments\n");
+                    printf("\n\33[31m\nError! insufficient Function filter arguments\x1b[m\n");
                     exit(0);
                 }
             }
@@ -247,7 +252,7 @@ void arg_handle(int argc, char* argv[])
                 }
                 else
                 {
-                    printf("\nError! insufficient Logical device filter arguments\n");
+                    printf("\n\33[31m\nError! insufficient Logical device filter arguments\x1b[m\n");
                     exit(0);
                 }
             }
