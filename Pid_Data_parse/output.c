@@ -44,19 +44,34 @@ void print_table_header(void)
         }
         else
         {
-            #if 0
+            draw_box(0,0,2,55);     // Draw header box
 
-            printf("\n_______________________________________________________\n");
-            printf(" Msg | CAN  |      CAN      |           BAP           |\n");
-            printf(" Len |  ID  |     Name      |         Message         |\n");
-            printf("-----|------|---------------|-------------------------|\n");
+            ansi_cursor_y_x(1, 6);  // Set cursor lower to avoid overwiting prior text
+            printf("\33(0");        // Set terminal display mode to graphic
 
-            #else
-            printf("\n Msg \33(0x\33(B CAN  \33(0x\33(B      CAN      \33(0x\33(B           BAP           \33(0x\33(B\n");
-            printf(  " Len \33(0x\33(B  ID  \33(0x\33(B     Name      \33(0x\33(B         Message         \33(0x\33(B\n");
+            printf("x\33[B\33[Dx"); // Draw vertical line
 
+            ansi_cursor_y_x(1, 13);
+            printf("x\33[B\33[Dx"); // Draw vertical line
 
-            #endif
+            ansi_cursor_y_x(1, 29);
+            printf("x\33[B\33[Dx"); // Draw vertical line
+
+            printf("\33(B");        // Exit terminal grapic mode
+
+            ansi_cursor_y_x(1, 2);
+            printf("Msg%s%s", "\33[B\33[3D", "Len");
+
+            ansi_cursor_y_x(1, 8);
+            printf("CAN%s%s", "\33[B\33[3D", "I.D");
+
+            ansi_cursor_y_x(1, 19);
+            printf("CAN%s%s", "\33[B\33[3D", "Name");
+
+            ansi_cursor_y_x(1, 39);
+            printf("Payload");
+
+            ansi_cursor_y_x(0, 0);
         }
         ansi_reset();
     }
@@ -184,7 +199,7 @@ void output_message(uint8_t* data)
                     if(dif_values[i] == CAN_ID)
                     {
                         value_found = 1;
-                        ansi_cursor_y_x(i + 6, 0);
+                        ansi_cursor_y_x(i + 2, 0);
                         break;
                     }
                     else
@@ -197,7 +212,7 @@ void output_message(uint8_t* data)
                 {
                     dif_index++;
                     dif_values[dif_index] = CAN_ID;
-                    ansi_cursor_y_x(dif_index + 6, 0);
+                    ansi_cursor_y_x(dif_index + 2, 0);
                 }
 
             }
