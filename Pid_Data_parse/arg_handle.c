@@ -171,6 +171,7 @@ void arg_handle(int argc, char* argv[])
                     }     
                 }
             }
+
             else if (strcmp(output_file_name, argv[i]) == 0 && argc > i)
             {
                 // Make sure that there is an argument after
@@ -185,6 +186,7 @@ void arg_handle(int argc, char* argv[])
                     exit(0);
                 }
             }
+
             else if (strcmp(com_input_option, argv[i]) == 0)
             {
                 // Make sure that there is an argument after
@@ -207,26 +209,32 @@ void arg_handle(int argc, char* argv[])
             {
                 pv_option = 1;
             }
+
             else if (strcmp(console_option, argv[i]) == 0)
             {
                 nc_option = 0;
             }
+
             else if (strcmp(output_option, argv[i]) == 0)
             {
                 no_option = 0;
             }
+
             else if (strcmp(bap_parse_option, argv[i]) == 0)
             {
                 bap_option = 1;
             }
+
             else if (strcmp(wip_parse_option, argv[i]) == 0)
             {
                 wip_option = 1;
             }
+
             else if (strcmp(dif_parse_option, argv[i]) == 0)
             {
                 dif_option = 1;
             }
+
             else if (strcmp(can_filter_option, argv[i]) == 0)
             {
                 // Make sure that there is an argument after
@@ -277,6 +285,7 @@ void arg_handle(int argc, char* argv[])
                     exit(0);
                 }
             }
+
             else if (strcmp(lsg_filter_option, argv[i]) == 0)
             {
                 // Make sure that there is an argument after
