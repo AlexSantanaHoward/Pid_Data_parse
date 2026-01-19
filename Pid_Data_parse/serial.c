@@ -101,17 +101,22 @@ void serial_init(void)
     printf("Serial port %ws successfully configured.\n", pcCommPort);
 }
 
-char serial_getc(void)
+int serial_getc(void)
 {
     char Rx_buff[1] = {0};
 
     if (!ReadFile(hCom, Rx_buff, 1, &dwBytesRead, NULL)) {
-        printf("SetCommState failed. Error: %d.\n", GetLastError());
+        printf("Unable to read port. Error: %d.\n", GetLastError());
         CloseHandle(hCom);
         exit(0);
     }
     else {
-        printf("Bytes read %d -> %s\n", dwBytesRead, Rx_buff);
+        // Convert CR into Line feed
+        if(Rx_buff[0] == 0x0D)
+        {
+           Rx_buff[0] = 10;
+        }
+        return (int) Rx_buff[0];
     }
 }
 

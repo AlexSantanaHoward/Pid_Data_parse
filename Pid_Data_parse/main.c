@@ -35,8 +35,7 @@ int main(int argc, char* argv[])
 	char value;
 
     open_files();
-    
-    if (com_port_status == 1)
+    if (com_port_status() == 1)
     {
         serial_init();
     }
@@ -47,7 +46,7 @@ int main(int argc, char* argv[])
 
     while (1)
 	{
-        if(com_port_status == 1)
+        if(com_port_status() == 1)
         {
             value = serial_getc();
         }
@@ -78,7 +77,7 @@ int main(int argc, char* argv[])
 
     terminal_fin();
     
-    if (com_port_status == 1)
+    if (com_port_status() == 1)
     {
         serial_end();
     }

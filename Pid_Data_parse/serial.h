@@ -5,7 +5,7 @@
 
 void serial_init(void);
 
-char serial_getc(void);
+int serial_getc(void);
 
 void serial_end(void);
 
