@@ -8,6 +8,8 @@
 #include "input.h"
 #include "output.h"
 #include "file.h"
+#include "ansi.h"
+#include "serial.h"
 
 #pragma warning(disable : 4996)
 

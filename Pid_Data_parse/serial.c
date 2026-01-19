@@ -2,37 +2,27 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-#include "serial.h"
-
 #include <windows.h>
 #include <tchar.h>
 
-//#include "output.h"
-//#include "arg_handle.h"
-//#include "can_ids.h"
-//#include "file.h"
+#include "serial.h"
+#include "arg_handle.h"
 
 #pragma warning(disable : 4996)
 
 // https://learn.microsoft.com/en-us/windows/win32/devio/configuring-a-communications-resource
 
-//char* COM_PORT[] = "COM15";
-
 static DCB dcb;
 static HANDLE hCom;
 static BOOL fSuccess;
-//TCHAR *pcCommPort = TEXT("\\\\.\\COM15"); //  Most systems have a COM1 port   //works
-//char* pcCommPort = TEXT("\\\\.\\COM15"); //  Most systems have a COM1 port    //works
-char* pcCommPort = L"\\\\.\\COM15"; //  Most systems have a COM1 port            // Does not work
 
+char* pcCommPort = TEXT("\\\\.\\COM15"); //  Most systems have a COM1 port    //works
+//char* pcCommPort = L"\\\\.\\COM15"; //  Most systems have a COM1 port            // works
 
-//static char* pcCommPort;
-// *pcCommPort = TEXT("COM1");
 
 DWORD dwBytesRead = 0;
 
-void PrintCommState(DCB dcb)
+static void PrintCommState(DCB dcb)
 {
     //  Print some of the DCB structure values
     printf("\nBaudRate = %d, ByteSize = %d, Parity = %d, StopBits = %d\n",
@@ -45,9 +35,8 @@ void PrintCommState(DCB dcb)
 
 void serial_init(void)
 {
-    //  Open a handle to the specified com port.
-    //hCom = CreateFile(TEXT("\\\\.\\COM15"),
-    hCom = CreateFile(pcCommPort,
+
+    hCom = CreateFile (pcCommPort,
         GENERIC_READ | GENERIC_WRITE,
         0,      //  must be opened with exclusive-access
         NULL,   //  default security attributes
@@ -55,14 +44,12 @@ void serial_init(void)
         0,      //  not overlapped I/O
         NULL); //  hTemplate must be NULL for comm devices
 
-    //printf("here");
-
 
     if (hCom == INVALID_HANDLE_VALUE)
     {
         //  Handle the error.
         //printf("\n\33[31mCreateFile failed with error %d.\n\n\33[m", GetLastError());
-        printf("\n\33[31mUnable to open %s\n\n\33[m", pcCommPort);
+        printf("\n\33[31mUnable to open %ws\nError = %d\n\33[m", pcCommPort, GetLastError());
         exit(0);
     }
 
@@ -111,7 +98,7 @@ void serial_init(void)
     }
 
     PrintCommState(dcb);
-    printf("Serial port %s successfully configured.\n", pcCommPort);
+    printf("Serial port %ws successfully configured.\n", pcCommPort);
 }
 
 char serial_getc(void)
@@ -131,5 +118,5 @@ char serial_getc(void)
 void serial_end(void)
 {
     CloseHandle(hCom);
-    printf("Serial port %s successfully closed.\n", pcCommPort);
+    printf("Serial port %ws successfully closed.\n", pcCommPort);
 }
