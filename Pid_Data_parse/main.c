@@ -35,8 +35,11 @@ int main(int argc, char* argv[])
 	char value;
 
     open_files();
-
-    serial_init();
+    
+    if (com_port_status == 1)
+    {
+        serial_init();
+    }
 
     // Output header
     print_table_header();
@@ -44,7 +47,14 @@ int main(int argc, char* argv[])
 
     while (1)
 	{
-        value = fgetc(input_p());
+        if(com_port_status == 1)
+        {
+            value = serial_getc();
+        }
+        else
+        {
+            value = fgetc(input_p());
+        }
 
 
 		if (value == EOF)
@@ -67,8 +77,11 @@ int main(int argc, char* argv[])
 	}
 
     terminal_fin();
-    serial_end();
-
+    
+    if (com_port_status == 1)
+    {
+        serial_end();
+    }
 }
 
 

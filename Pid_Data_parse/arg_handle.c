@@ -28,7 +28,7 @@ static char output_file[250];
 static char com_port[250];
 
 static int output_defined;
-//static int com_option;
+static int com_port_option;
 static int pv_option;
 static int nc_option;
 static int no_option;
@@ -92,6 +92,11 @@ int wip_state(void)
 int dif_state(void)
 {
     return dif_option;
+}
+
+int com_port_status(void)
+{
+    return com_port_option;
 }
 
 char* com_address(void)
@@ -194,6 +199,7 @@ void arg_handle(int argc, char* argv[])
                 if (i < argc)
                 {
                     snprintf(com_port, strlen(argv[i]) + 1, "%s", argv[i + 1]);
+                    com_port_option = 1;
                 }
                 else
                 {
