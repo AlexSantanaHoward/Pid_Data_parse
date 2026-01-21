@@ -106,9 +106,18 @@ int serial_getc(void)
     char Rx_buff[1] = {0};
 
     if (!ReadFile(hCom, Rx_buff, 1, &dwBytesRead, NULL)) {
+
+        #if 0
+
         printf("Unable to read port. Error: %d.\n", GetLastError());
         CloseHandle(hCom);
         exit(0);
+
+        #else
+
+        return EOF;
+
+        #endif
     }
     else {
         // Convert CR into Line feed
