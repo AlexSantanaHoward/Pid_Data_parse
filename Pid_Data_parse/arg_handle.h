@@ -4,7 +4,9 @@
 #define INC_ARG_HANDLE_H_
 
 
-static int string_find_last_char(char* str, char c);
+//static int string_find_last_char(char* str, char c);
+
+int input_file_asserted(void);
 
 char* file_in(void);
 

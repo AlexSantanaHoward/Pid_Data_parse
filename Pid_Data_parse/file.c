@@ -76,7 +76,10 @@ void output_close(void)
 
 void open_files(void)
 {
-    input_file_init();
+    if(input_file_asserted())
+    {
+        input_file_init();
+    }
 
     if(no_state())
     {

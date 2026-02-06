@@ -27,6 +27,7 @@ static char input_file[250];
 static char output_file[250];
 static char com_port[250];
 
+static int input_defined;
 static int output_defined;
 static int com_port_option;
 static int pv_option;
@@ -53,6 +54,10 @@ static int string_find_last_char(char* str, char c)
     return last_char_p;
 }
 
+int input_file_asserted(void) 
+{
+    return input_defined;
+}
 
 char* file_in(void)
 {
@@ -162,6 +167,7 @@ void arg_handle(int argc, char* argv[])
 
                 // Set input file name
                 snprintf(input_file, strlen(argv[i]) + 1, "%s", argv[i]);
+                input_defined = 1;
 
                 if(output_defined == 0)
                 {
