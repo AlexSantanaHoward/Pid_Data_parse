@@ -240,7 +240,7 @@ void output_message(uint8_t* data)
                     if (data[3] <= 0x08)
                     {
                         printf(" ignition  ON |");
-                        printf(" rpm = %04i |", (256 * (data[4] + data[5])) / 20);
+                        printf(" rpm = %04i |", (256 * (data[5] + data[6])) / 4);
                         printf(" Temp1 = %i |", data[6] - 40);
                     }
                     else {
@@ -251,7 +251,7 @@ void output_message(uint8_t* data)
                 else if (CAN_ID == 0x2b06)
                 {
                     printf(" ignition  ON |");
-                    printf(" Sh ToT = %2i |");
+                    printf(" Sh ToT = %2i |", data[7]);
                 }
             }
             printf("\n");
