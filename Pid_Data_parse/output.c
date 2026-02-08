@@ -248,6 +248,11 @@ void output_message(uint8_t* data)
                     }
 
                 }
+                else if (CAN_ID == 0x2b06)
+                {
+                    printf(" ignition  ON |");
+                    printf(" Sh ToT = %2i |");
+                }
             }
             printf("\n");
 

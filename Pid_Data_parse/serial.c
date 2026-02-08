@@ -16,7 +16,7 @@ static DCB dcb;
 static HANDLE hCom;
 static BOOL fSuccess;
 
-char* pcCommPort = TEXT("\\\\.\\COM15"); //  Most systems have a COM1 port    //works
+char* pcCommPort = TEXT("\\\\.\\COM13"); //  Most systems have a COM1 port    //works
 //char* pcCommPort = L"\\\\.\\COM15"; //  Most systems have a COM1 port            // works
 
 
