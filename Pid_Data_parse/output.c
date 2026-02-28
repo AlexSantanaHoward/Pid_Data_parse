@@ -8,6 +8,7 @@
 #include "can_ids.h"
 #include "file.h"
 #include "ansi.h"
+#include "wip.h"
 
 
 #pragma warning(disable : 4996)
@@ -234,108 +235,10 @@ void output_message(uint8_t* data)
                 bap_parse(data, msg_length);
             }
             if (wip_state())
-            {
-                if (CAN_ID == 0x5b03)
-                {
-                    if (data[3] >= 0x08)
-                    {
-                        if(data[3] == 0x0f)
-                        {
-                            printf(" ignition  ON |");
-                        }
-                        else 
-                        {
-                            printf("   Engine  ON |");
-                        }
-                        printf(" rpm = %04i |", (256 * (data[4] + data[5])) / 4); //?
-                        printf(" Eng T = %i |", data[6] - 80);
-                    }
-                    else {
-                        printf(" ignition OFF |");
-                    }
-
-                }
-                else if (CAN_ID == 0x2b06) // Short trip
-                {
-                    int iShortTotalTimeOfTravelMin = (data[7] + (data[8] * 251));
-                    int iShortTimeOfTravelHours = iShortTotalTimeOfTravelMin / 60;
-                    int iShortTimeOfTravelMin = iShortTotalTimeOfTravelMin - (iShortTimeOfTravelHours * 60);
-
-                    printf(" ignition  ON |"); //?
-                    //printf(" Sh ToT = %2i |", (data[7] + (data[8] * 251)));
-                    printf("Sh ToT = %02i:%02i |", iShortTimeOfTravelHours, iShortTimeOfTravelMin);
-                }
-                else if (CAN_ID == 0x2d06) // Long trip
-                {
-
-                    int iLongTotalTimeOfTravelMin = (data[7] + (data[8] * 251));
-                    int iLongTimeOfTravelHours = iLongTotalTimeOfTravelMin / 60;
-                    int iLongTimeOfTravelMin = iLongTotalTimeOfTravelMin - (iLongTimeOfTravelHours * 60);
-
-                    printf(" ignition  ON |"); //?
-                    printf("Ln ToT = %01i:%02i |", iLongTimeOfTravelHours, iLongTimeOfTravelMin);
-                }
-                else if (CAN_ID == 0x7004) // bsg_kombi 
-                {
-                    if ((data[4] & 0x10) == 0x10)
-                    {
-                        printf(" Bonnet Open  |");                        
-                    }
-                    else 
-                    {
-                        printf(" Bonnet Shut  |");
-                    }
-
-                    if ((data[4] & 0x60) == 0x60)
-                    {
-                        printf(" Boot   Open  |");
-                    }
-                    else
-                    {
-                        printf(" Boot   Shut  |");
-                    }
-
-                    if ((data[4] & 0x01) == 0x01)
-                    {
-                        printf(" F D    Open  |");
-                    }
-                    else
-                    {
-                        printf(" F D    Shut  |");
-                    }
-
-                    if ((data[4] & 0x02) == 0x02)
-                    {
-                        printf(" F P    Open  |");
-                    }
-                    else
-                    {
-                        printf(" F P    Shut  |");
-                    }
-
-                    if ((data[4] & 0x04) == 0x04)
-                    {
-                        printf(" R P    Open  |");
-                    }
-                    else
-                    {
-                        printf(" R P    Shut  |");
-                    }
-
-                    if ((data[4] & 0x08) == 0x08)
-                    {
-                        printf(" R D    Open  |");
-                    }
-                    else
-                    {
-                        printf(" R D    Shut  |");
-                    }
-
-
-                    //printf(" ignition  ON |"); //?
-                    //printf(" Ln ToT = %2i |", (data[7] + (data[8] * 251)));
-                }
+            {                         
+                wip_parse(CAN_ID,data);
             }
+
             printf("\n");
 
             if (dif_state())
