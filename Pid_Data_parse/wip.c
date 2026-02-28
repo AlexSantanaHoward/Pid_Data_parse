@@ -18,7 +18,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
     case (gw_motor):
 
         printf(" Byte 1 Unknown |");
-        printf(" rpm = %04i |", (256 * (data[4] + data[5])) / 4); //? This is wrong
+        printf(" rpm = %04i |", ((256 * data[5]) + data[4]) / 4); //? This is wrong
         printf(" Eng T = %03i |", data[6] - 80); // This currently seems correct, need to verify with obd2
 
     break;
@@ -40,7 +40,17 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         iShortTimeOfTravelMin = iShortTotalTimeOfTravelMin - (iShortTimeOfTravelHours * 60);
 
         //printf(" ignition  ON |"); //?
+        printf(" Sh Dis = %04i  |", data[5]); // Short trip distance, this is correct
+
         printf(" Sh ToT = %02i:%02i |", iShortTimeOfTravelHours, iShortTimeOfTravelMin); // This is correct, verified with trip
+
+        if (data[9] == 0xff) // No short average speed
+        {
+            printf(" Sh Speed = ---  |"); // Short trip distance, this is correct
+        } else
+        {
+            printf(" Sh Speed = %03i  |", data[9]); // Short trip distance, this is correct
+        }
 
         break;
 
@@ -50,7 +60,18 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         iLongTimeOfTravelHours = iLongTotalTimeOfTravelMin / 60;
         iLongTimeOfTravelMin = iLongTotalTimeOfTravelMin - (iLongTimeOfTravelHours * 60);
 
+        printf(" Ln Dis = %04i  |", data[5]); // Long trip distance, this is correct
+
         printf(" Ln ToT = %01i:%02i |", iLongTimeOfTravelHours, iLongTimeOfTravelMin); // This is correct, verified with trip
+
+        if (data[9] == 0xff) // No Long average speed
+        {
+            printf(" Ln Speed = ---  |"); // Long trip distance, this is correct
+        }
+        else
+        {
+            printf(" Ln Speed = %03i  |", data[9]); // Long trip distance, this is correct
+        }
 
 
         break;
@@ -62,18 +83,31 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
 
         }
 
+        printf(" ");
+
+        if ((data[3] & 0x01) == 0x01 || (data[3] == 0x00)) // Passenger indicator
+        {
+            printf("\033[42m");   //Set background to green
+        }
+        printf("L\033[m ");
+
+        if ((data[3] & 0x02) == 0x02) // Driver indicator
+        {
+            printf("\033[42m");   //Set background to green
+        }
+        printf("R\033[m ");
 
         if (data[3] & 0x20)         // reverse
         {
              printf("\033[41m");   //Set background to red
         }
-        printf(" Reverse\033[m ");
+        printf("Revrs\033[m ");
 
         if ((data[3] & 0x80) != 0x80)         // ignition/Engine
         {
             printf("\033[48;5;172m");   //Set background to orange
         }
-        printf("Engine\033[m ");
+        printf("Eng\033[m  |");
 
         if (data[4] & 0x10) // hood
         {
@@ -121,9 +155,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         {
             printf("\033[41m");   //Set background to red
         }
-        printf("Fog\033[m ");
-
-        printf("L");
+        printf("Fog\033[m ");        
 
 
         break;
