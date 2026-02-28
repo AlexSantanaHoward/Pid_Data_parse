@@ -44,6 +44,8 @@ int terminal_init(void)
         return -1;
     }
 
+    printf("\033[?25l");
+
     return 0;
 
 }
@@ -51,6 +53,7 @@ int terminal_init(void)
 void terminal_fin(void)
 {
     // Restore the mode on the way out to be nice to other command-line applications.
+    printf("\033[?25h");
     SetConsoleMode(hStdOut, originalMode);
 }
 
