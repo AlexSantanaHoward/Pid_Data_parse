@@ -39,6 +39,8 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         iShortTimeOfTravelHours = iShortTotalTimeOfTravelMin / 60;
         iShortTimeOfTravelMin = iShortTotalTimeOfTravelMin - (iShortTimeOfTravelHours * 60);
 
+        printf(" Sh MPG = %.1f  |", (float)(data[3] + 256) / 10 );
+
         //printf(" ignition  ON |"); //?
         printf(" Sh Dis = %04i  |", data[5]); // Short trip distance, this is correct
 
@@ -59,6 +61,8 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         iLongTotalTimeOfTravelMin = (data[7] + (data[8] * 256));
         iLongTimeOfTravelHours = iLongTotalTimeOfTravelMin / 60;
         iLongTimeOfTravelMin = iLongTotalTimeOfTravelMin - (iLongTimeOfTravelHours * 60);
+
+        printf(" Ln MPG = %.1f  |", (float)(data[3] + 256) / 10);
 
         printf(" Ln Dis = %04i  |", data[5]); // Long trip distance, this is correct
 
@@ -168,3 +172,12 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
     }
 
 }
+
+/*
+char* sFuelConsumption(uint8_t data)
+{
+    char* cFuelConsumption[5];
+    sprintf_s(cFuelConsumption,5,"%.2f", (float)((data + 256) / 10));
+    return cFuelConsumption;
+}
+*/
