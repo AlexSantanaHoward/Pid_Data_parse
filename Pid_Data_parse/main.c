@@ -5,7 +5,7 @@
 
 #include "arg_handle.h"
 #include "bap.h"
-#include "input.h"
+#include "Input.h"
 #include "output.h"
 #include "file.h"
 #include "ansi.h"

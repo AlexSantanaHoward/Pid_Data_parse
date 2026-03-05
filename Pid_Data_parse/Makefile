@@ -1,11 +1,18 @@
+#Defines
+cc := gcc
+oflags := -o
+cflags := -Wall
+exe := Pid_Data_parse
+
+
 .c.o:
-	gcc -c $<
+	$(cc) -c $(cflags) $<
 
 srcfiles := $(wildcard *.c)
 objfiles := $(addsuffix .o, $(basename $(srcfiles)))
 
 Pid_Data_parse: $(objfiles)
-	ld $(objfiles) -o $<
+	$(cc) $(oflags) $(exe) $(objfiles)
 	
 all: Pid_Data_parse
 

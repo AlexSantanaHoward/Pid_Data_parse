@@ -9,6 +9,7 @@
 #include "file.h"
 #include "ansi.h"
 #include "wip.h"
+#include "bap.h"
 
 
 #pragma warning(disable : 4996)
@@ -268,6 +269,21 @@ void output_message(uint8_t* data)
 }
 
 
+// TODO:Should really incorporate str_to_hex and this function
+static int str_to_02_hex(char* str)
+{
+    int x;
+
+    if (sscanf(str, "%02x", &x) != EOF)
+    {
+        return x;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 void filter_add(int type, char* id)
 {
 
@@ -316,20 +332,6 @@ static int str_to_hex(char* str)
     }
 }
 
-// TODO:Should really incorporate str_to_hex and this function
-static int str_to_02_hex(char* str)
-{
-    int x;
-
-    if (sscanf(str, "%02x", &x) != EOF)
-    {
-        return x;
-    }
-    else
-    {
-        return 0;
-    }
-}
 
 int filter_check(uint8_t* data)
 {
