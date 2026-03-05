@@ -11,7 +11,11 @@
 #include "ansi.h"
 #include "serial.h"
 
+#ifdef _WIN32
+
 #pragma warning(disable : 4996)
+
+#endif
 
 char message[100];
 

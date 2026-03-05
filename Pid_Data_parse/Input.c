@@ -6,7 +6,11 @@
 #include "output.h"
 #include "file.h"
 
+#ifdef _WIN32
+
 #pragma warning(disable : 4996)
+
+#endif
 
 #define Hunting		0
 #define In_Frame	1

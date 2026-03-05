@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#ifdef _WIN32
+
 #include <windows.h>
+
 
 //#include "output.h"
 //#include "arg_handle.h"
@@ -56,6 +59,22 @@ void terminal_fin(void)
     printf("\033[?25h");
     SetConsoleMode(hStdOut, originalMode);
 }
+#else
+
+int terminal_init(void)
+{
+    printf("\033[?25l");
+    
+    return 0;
+}
+
+void terminal_fin(void)
+{
+    // Restore the mode on the way out to be nice to other command-line applications.
+    printf("\033[?25h");
+}
+
+#endif
 
 void ansi_reset(void)
 {

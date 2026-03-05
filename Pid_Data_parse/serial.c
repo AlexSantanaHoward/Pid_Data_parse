@@ -2,11 +2,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <windows.h>
-#include <tchar.h>
 
 #include "serial.h"
 #include "arg_handle.h"
+
+#ifdef _WIN32
+
+#include <windows.h>
+#include <tchar.h>
+
+
 
 #pragma warning(disable : 4996)
 
@@ -134,3 +139,22 @@ void serial_end(void)
     CloseHandle(hCom);
     printf("Serial port %ws successfully closed.\n", pcCommPort);
 }
+
+#else
+
+void serial_init(void)
+{
+
+}
+
+int serial_getc(void)
+{
+    return 0;
+}
+
+void serial_end(void)
+{
+
+}
+
+#endif

@@ -365,3 +365,7 @@ FodyWeavers.xsd
 # Makefile files
 *.o
 Pid_Data_parse/*.exe
+Pid_Data_parse/Pid_Data_parse
+
+#VS code files
+.vscode/

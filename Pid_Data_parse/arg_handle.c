@@ -6,7 +6,11 @@
 #include "arg_handle.h"
 #include "output.h"
 
+#ifdef _WIN32
+
 #pragma warning(disable : 4996)
+
+#endif
 
 char* input_option      = "-i";
 char* output_file_name  = "-o";

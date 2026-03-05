@@ -5,7 +5,11 @@
 
 #include "can_ids.h"
 
+#ifdef _WIN32
+
 #pragma warning(disable : 4996)
+
+#endif
 
 
 uint16_t id_value[] = { 0x5b03,			0x6703,			 0x6903,			0x7004,
@@ -47,4 +51,5 @@ char* check_id_name(uint16_t can_id)
 
         }
     }
+    return "              ";
 }

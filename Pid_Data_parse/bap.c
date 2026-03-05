@@ -5,8 +5,9 @@
 
 #include "bap.h"
 
+#ifdef _WIN32
 #pragma warning(disable : 4996)
-
+#endif
 
 
 
@@ -20,7 +21,7 @@ static uint16_t bap_header_assemble(uint8_t* buff, int header_point)
     return header;
 }
 
-
+/*
 static void string_data_to_array(uint8_t *buff, char* data, int len)
 {
     int data_string_len = strlen(data);
@@ -53,14 +54,14 @@ static void string_data_to_array(uint8_t *buff, char* data, int len)
 
     }
 }
-
+*/
 
 void bap_parse(uint8_t* data_buff, int len)
 {
 
     char return_str[100] = { 0 };
 
-    int long_frame = 0;
+    //int long_frame = 0;
     int op_code = 0;
     int logical_device_id = 0;
     int function_id = 0;

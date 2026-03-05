@@ -11,8 +11,11 @@
 #include "wip.h"
 #include "bap.h"
 
+#ifdef _WIN32
 
 #pragma warning(disable : 4996)
+
+#endif
 
 
 static int can_filter_index = 0;
@@ -26,6 +29,39 @@ static uint8_t lsg_filter[11];
 
 static int dif_index = 0;
 static uint16_t dif_values[23];
+
+
+// TODO:Should really incorporate str_to_hex and this function
+static int str_to_02_hex(char* str)
+{
+    int x;
+
+    if (sscanf(str, "%02x", &x) != EOF)
+    {
+        return x;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+// TODO:Should really incorporate str_to_hex and this function
+static int str_to_hex(char* str)
+{
+    int x;
+
+    if (sscanf(str, "%04x", &x) != EOF)
+    {
+        return x;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 
 void print_table_header(void)
 {
@@ -269,20 +305,7 @@ void output_message(uint8_t* data)
 }
 
 
-// TODO:Should really incorporate str_to_hex and this function
-static int str_to_02_hex(char* str)
-{
-    int x;
 
-    if (sscanf(str, "%02x", &x) != EOF)
-    {
-        return x;
-    }
-    else
-    {
-        return 0;
-    }
-}
 
 void filter_add(int type, char* id)
 {
@@ -316,22 +339,6 @@ void filter_add(int type, char* id)
     
     }
 }
-
-// TODO:Should really incorporate str_to_hex and this function
-static int str_to_hex(char* str)
-{
-    int x;
-
-    if (sscanf(str, "%04x", &x) != EOF)
-    {
-        return x;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
 
 int filter_check(uint8_t* data)
 {

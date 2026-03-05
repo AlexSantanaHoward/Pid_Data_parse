@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#ifdef _WIN32
+
 #pragma warning(disable : 4996)
+#endif
 
 #include "arg_handle.h"
 
@@ -51,7 +54,7 @@ void output_file_init()
 
     if (output == NULL)
     {
-        printf("\n Error Opening % s : Unable to access \n", file_out());
+        printf("\n Error Opening %s : Unable to access \n", file_out());
         exit(0);
     }
     else
