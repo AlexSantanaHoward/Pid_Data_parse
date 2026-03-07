@@ -23,7 +23,7 @@ char id_name[23][15] = { " gw_motor     ", " GwAnt1       ", " GwAnt2       ", "
                          " mfa4         ", " bsg2         ", " gateway_kombi", " bsg3         ",
                          " kombi_k1     ", " mfa1         ", " mfa2         ", " mfa3         ",
                          " system_info1 ", " fzg_ident    ", "-Unknown 1    ", "-Unknown 2    ",
-                         "-Unknown 3    ", "-Unknown 4    ", "-Unknown 5    ", "-Unknown 6    ",
+                         "-Unknown 3    ", " radio        ", "-Unknown 5    ", "-Unknown 6    ",
                          "-Unknown 7    ", "-Unknown 8    ", "-Unknown 9    " };
 
 /**Returns name of CAN ID.

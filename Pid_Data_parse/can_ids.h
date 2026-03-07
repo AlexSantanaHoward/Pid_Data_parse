@@ -26,7 +26,8 @@
 #define mfa2            0x2b06
 #define mfa3            0x2d06
 
-#define unknown_4       0x6c06
+#define radio           0x6c06
+
 #define unknown_7       0x5306
 #define kombi_k1        0x2106
 

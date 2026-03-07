@@ -84,7 +84,7 @@ void print_table_header(void)
         {
             draw_box(0,0,2,55);     // Draw header box
 
-            ansi_cursor_y_x(1, 6);  // Set cursor lower to avoid overwiting prior text
+            ansi_cursor_y_x(1, 6);  // Set cursor lower to avoid overwriting prior text
             printf("\33(0");        // Set terminal display mode to graphic
 
             printf("x\33[B\33[Dx"); // Draw vertical line
@@ -95,7 +95,7 @@ void print_table_header(void)
             ansi_cursor_y_x(1, 29);
             printf("x\33[B\33[Dx"); // Draw vertical line
 
-            printf("\33(B");        // Exit terminal grapic mode
+            printf("\33(B");        // Exit terminal graphic mode
 
             ansi_cursor_y_x(1, 2);
             printf("Msg%s%s", "\33[B\33[3D", "Len");

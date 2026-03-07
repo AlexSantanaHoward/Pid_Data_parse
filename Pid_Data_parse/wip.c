@@ -5,12 +5,26 @@
 
 #include "can_ids.h"
 
+typedef enum
+{
+    rms_IDLE        = 0,
+    rms_Text_build  = 1,
+    rms_Text_end    = 2,
+
+} RadioMessageState;
+
+static RadioMessageState rms_state = {0};
+static int iTextToRead;
+static int iTextRead;
+
+uint8_t sRInfo[128];
 
 void wip_parse(uint16_t CAN_ID, uint8_t* data)
 {
 
     int iShortTotalTimeOfTravelMin, iShortTimeOfTravelHours, iShortTimeOfTravelMin;
     int iLongTotalTimeOfTravelMin, iLongTimeOfTravelHours, iLongTimeOfTravelMin;
+
 
 
     switch(CAN_ID)
@@ -79,6 +93,91 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
 
 
         break;
+
+    case (radio):
+
+        switch(rms_state)
+        {
+            case(rms_IDLE):
+            
+
+                if (data[3] == 0xb0)  // Text transmission
+                {
+                    //TODO Deal with different message types i.e artist, song,station, station data
+
+                    iTextToRead = data[4];
+                    iTextRead = 0;
+                    
+
+                    if(data[4] >= 4)
+                    {
+                        sRInfo[0] = data[7];
+                        sRInfo[1] = data[8];
+                        sRInfo[2] = data[9];
+                        sRInfo[3] = data[10];
+
+                        iTextRead = 4;
+                        iTextToRead = (iTextToRead - 4);
+                    }
+                    //TODO what if the text is only 3 chars?
+                    rms_state = rms_Text_build;
+                }
+
+            break;
+
+            case(rms_Text_build):
+
+                if((data[3] & 0xf0) == 0xf0)
+                {
+                    if(iTextToRead >= 6)
+                    {
+                        for (int i = 0; i <= 6; i++, iTextRead++ )
+                            {
+                                sRInfo[iTextRead] = data[4 + i];
+                                iTextToRead = iTextToRead -1;
+                            }
+                    }else
+                    {
+                        for (int i = 0, x = iTextToRead; i <= x; i++, iTextRead++ )
+                            {
+                                sRInfo[iTextRead] = data[4 + i];
+
+                                if(iTextToRead == 0)
+                                {
+                                    break;
+                                }
+
+                                iTextToRead = iTextToRead -1;
+                            }
+                            iTextToRead = 0;
+                    }
+
+                    if (iTextToRead == 0)
+                    {
+                        //TODO should really be '<' but see if end char is consistent
+                        for(int i = 0; i <= iTextRead;i++)
+                        {
+                            printf("%c",sRInfo[i]);
+                        }
+                        #if 0
+                        for(int i = 0; i <= iTextRead;i++)
+                        {
+                            printf("%02x ",sRInfo[i]);
+                        }
+                        #endif
+
+                        iTextRead = 0;
+                        iTextToRead = 0;
+                        rms_state = rms_IDLE;
+                    } 
+                }
+
+
+            break;
+        }
+
+        
+    break;
 
     case (bsg_kombi):
 
