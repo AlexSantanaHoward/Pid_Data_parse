@@ -7,17 +7,26 @@
 
 typedef enum
 {
-    rms_IDLE        = 0,
-    rms_Text_build  = 1,
-    rms_Text_end    = 2,
+    rms_IDLE            = 0,
+    rms_Desc_build      = 1,
+    rms_Station_build   = 2,
 
 } RadioMessageState;
 
 static RadioMessageState rms_state = {0};
+
 static int iTextToRead;
 static int iTextRead;
 
-uint8_t sRInfo[128];
+static int iStationTextToRead;
+static int iStationTextRead;
+
+
+static int iMaxTestRead;
+static int iMaxStationRead;
+
+uint8_t sRInfo[64];
+uint8_t sRStation[64];
 
 void wip_parse(uint16_t CAN_ID, uint8_t* data)
 {
@@ -32,7 +41,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
     case (gw_motor):
 
         printf(" Byte 1 Unknown |");
-        printf(" rpm = %04i |", ((256 * data[5]) + data[4]) / 4); //? This is wrong
+        printf(" rpm = %04i |", ((256 * data[5]) + data[4]) / 4); //? This seems correct
         printf(" Eng T = %03i |", data[6] - 80); // This currently seems correct, need to verify with obd2
 
     break;
@@ -53,14 +62,22 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         iShortTimeOfTravelHours = iShortTotalTimeOfTravelMin / 60;
         iShortTimeOfTravelMin = iShortTotalTimeOfTravelMin - (iShortTimeOfTravelHours * 60);
 
-        printf(" Sh MPG = %.1f  |", (float)(data[3] + 256) / 10 );
+        //printf(" Sh MPG = %.1f  |", (float)(data[3] + 256) / 10 );
+        if((data[4] & 0x0f) != 0x0f)
+        {
+            //printf(" Sh MPG = %.1f  |", (float)((data[3] / 10) + ((data[4] & 0x0f) * 25.6) ) );
+            printf(" Sh MPG = %.1f  |", (float)(data[3] + ( (data[4] & 0x0f ) * 256)) / 10);
+        } else
+        {
+            printf(" Sh MPG = ----  |");
+        }
 
         //printf(" ignition  ON |"); //?
         printf(" Sh Dis = %04i  |", data[5]); // Short trip distance, this is correct
 
         printf(" Sh ToT = %02i:%02i |", iShortTimeOfTravelHours, iShortTimeOfTravelMin); // This is correct, verified with trip
 
-        if (data[9] == 0xff) // No short average speed
+        if ((data[9] & 0xf0) == 0xf0) // No short average speed
         {
             printf(" Sh Speed = ---  |"); // Short trip distance, this is correct
         } else
@@ -76,7 +93,15 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
         iLongTimeOfTravelHours = iLongTotalTimeOfTravelMin / 60;
         iLongTimeOfTravelMin = iLongTotalTimeOfTravelMin - (iLongTimeOfTravelHours * 60);
 
-        printf(" Ln MPG = %.1f  |", (float)(data[3] + 256) / 10);
+        //printf(" Ln MPG = %.1f  |", (float)(data[3] + 256) / 10);
+        if((data[4] & 0x0f) != 0x0f)
+        {
+            //printf(" Sh MPG = %.1f  |", (float)((data[3] / 10) + ((data[4] & 0x0f) * 25.6) ) );
+            printf(" Ln MPG = %.1f  |", (float)(data[3] + ((data[4] & 0x0f) * 256)) / 10);
+        } else
+        {
+            printf(" Ln MPG = ----  |");
+        }
 
         printf(" Ln Dis = %04i  |", data[5]); // Long trip distance, this is correct
 
@@ -101,31 +126,43 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
             case(rms_IDLE):
             
 
-                if (data[3] == 0xb0)  // Text transmission
+                if (data[3] == 0xb0)  // Description transmission
                 {
                     //TODO Deal with different message types i.e artist, song,station, station data
 
-                    iTextToRead = data[4];
+                    iTextToRead = data[7];
                     iTextRead = 0;
                     
 
-                    if(data[4] >= 4)
+                    if(data[7] >= 3)
                     {
-                        sRInfo[0] = data[7];
-                        sRInfo[1] = data[8];
-                        sRInfo[2] = data[9];
-                        sRInfo[3] = data[10];
+                        sRInfo[0] = data[8];
+                        sRInfo[1] = data[9];
+                        sRInfo[2] = data[10];
 
-                        iTextRead = 4;
-                        iTextToRead = (iTextToRead - 4);
+                        iTextRead = 3;
+                        iTextToRead = (iTextToRead - 3);
                     }
                     //TODO what if the text is only 3 chars?
-                    rms_state = rms_Text_build;
+                    rms_state = rms_Desc_build;
+                }
+                else if(data[3] == 0xa0)
+                {
+                    if(data[7] >= 3)
+                    {
+                        sRStation[0] = data[8];
+                        sRStation[1] = data[9];
+                        sRStation[2] = data[10];
+
+                        iStationTextRead = 3;
+                        iStationTextToRead = (iStationTextToRead - 3);
+                    }
+                    rms_state = rms_Station_build;
                 }
 
             break;
 
-            case(rms_Text_build):
+            case(rms_Desc_build):
 
                 if((data[3] & 0xf0) == 0xf0)
                 {
@@ -155,9 +192,24 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
                     if (iTextToRead == 0)
                     {
                         //TODO should really be '<' but see if end char is consistent
-                        for(int i = 0; i <= iTextRead;i++)
+
+                        if (iTextRead >= iMaxTestRead)
                         {
-                            printf("%c",sRInfo[i]);
+                            iMaxTestRead = iTextRead;
+                        }
+
+                        printf("\033[15C");
+                        //for(int i = 0; i <= iTextRead;i++)
+                        for (int i = 0; i <= iMaxTestRead;i++)
+                        {
+                            if(i <= iTextRead)
+                            {
+                                printf("%c",sRInfo[i]);
+                                sRInfo[i] = '\0';
+                            }else
+                            {
+                                printf(" ");
+                            }
                         }
                         #if 0
                         for(int i = 0; i <= iTextRead;i++)
@@ -174,6 +226,75 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
 
 
             break;
+
+            case(rms_Station_build):
+
+            if((data[3] & 0xe0) == 0xe0)
+                {
+                    if(iStationTextToRead >= 6)
+                    {
+                        for (int i = 0; i <= 6; i++, iStationTextRead++ )
+                            {
+                                sRStation[iStationTextRead] = data[4 + i];
+                                iStationTextToRead = iStationTextToRead -1;
+                            }
+                    }
+                    else
+                    {
+                        for (int i = 0, x = iStationTextToRead; i <= x; i++, iStationTextRead++ )
+                            {
+                                sRStation[iStationTextRead] = data[4 + i];
+
+                                if(iStationTextToRead == 0)
+                                {
+                                    break;
+                                }
+
+                                iStationTextToRead = iStationTextToRead -1;
+                            }
+                            iStationTextToRead = 0;
+                    }
+
+                    if (iStationTextToRead == 0)
+                    {
+                        //TODO should really be '<' but see if end char is consistent
+
+                        if (iStationTextRead >= iMaxStationRead)
+                        {
+                            iMaxStationRead = iStationTextRead;
+                        }
+
+                        //for(int i = 0; i <= iTextRead;i++)
+                        printf("\033[1C");
+                        for (int i = 0; i <= iMaxStationRead;i++)
+                        {
+                            if(i <= iStationTextRead)
+                            {
+                                printf("%c",sRStation[i]);
+                                //sRStation[i] = '\0';
+                            }else
+                            {
+                                printf(" ");
+                            }
+                        }
+                        #if 1
+                        for(int i = 0; i <= iStationTextRead;i++)
+                        {
+                            printf("%02x ",sRStation[i]);
+                        }
+                        #endif
+
+                        iStationTextRead = 0;
+                        iStationTextToRead = 0;
+                        rms_state = rms_IDLE;
+                    } 
+                }
+
+
+
+            break;
+
+
         }
 
         

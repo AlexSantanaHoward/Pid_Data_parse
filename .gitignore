@@ -369,3 +369,4 @@ Pid_Data_parse/Pid_Data_parse
 
 #VS code files
 .vscode/
+*.code-workspace
