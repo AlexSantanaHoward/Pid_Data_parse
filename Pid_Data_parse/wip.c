@@ -148,6 +148,8 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
                 }
                 else if(data[3] == 0xa0)
                 {
+                    iStationTextToRead = data[7];
+
                     if(data[7] >= 3)
                     {
                         sRStation[0] = data[8];
@@ -166,23 +168,24 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
 
                 if((data[3] & 0xf0) == 0xf0)
                 {
-                    if(iTextToRead >= 6)
+                    if(iTextToRead >= 7)
                     {
                         for (int i = 0; i <= 6; i++, iTextRead++ )
                             {
                                 sRInfo[iTextRead] = data[4 + i];
                                 iTextToRead = iTextToRead -1;
                             }
-                    }else
+                    }
+                    else
                     {
                         for (int i = 0, x = iTextToRead; i <= x; i++, iTextRead++ )
                             {
-                                sRInfo[iTextRead] = data[4 + i];
-
                                 if(iTextToRead == 0)
                                 {
                                     break;
                                 }
+
+                                sRInfo[iTextRead] = data[4 + i];
 
                                 iTextToRead = iTextToRead -1;
                             }
@@ -198,7 +201,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
                             iMaxTestRead = iTextRead;
                         }
 
-                        printf("\033[15C");
+                        printf("\033[%iC",(iMaxStationRead + 4) );
                         //for(int i = 0; i <= iTextRead;i++)
                         for (int i = 0; i <= iMaxTestRead;i++)
                         {
@@ -231,7 +234,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
 
             if((data[3] & 0xe0) == 0xe0)
                 {
-                    if(iStationTextToRead >= 6)
+                    if(iStationTextToRead >= 7)
                     {
                         for (int i = 0; i <= 6; i++, iStationTextRead++ )
                             {
@@ -277,7 +280,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
                                 printf(" ");
                             }
                         }
-                        #if 1
+                        #if 0
                         for(int i = 0; i <= iStationTextRead;i++)
                         {
                             printf("%02x ",sRStation[i]);
