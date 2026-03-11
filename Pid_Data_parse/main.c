@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
     arg_handle(argc, argv);
 
-	char value;
+	signed char value;
 
     open_files();
     if (com_port_status() == 1)

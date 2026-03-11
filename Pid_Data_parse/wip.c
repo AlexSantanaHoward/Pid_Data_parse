@@ -105,7 +105,7 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data)
 
         printf(" Ln Dis = %04i  |", data[5]); // Long trip distance, this is correct
 
-        printf(" Ln ToT = %01i:%02i |", iLongTimeOfTravelHours, iLongTimeOfTravelMin); // This is correct, verified with trip
+        printf(" Ln ToT = %02i:%02i |", iLongTimeOfTravelHours, iLongTimeOfTravelMin); // This is correct, verified with trip
 
         if (data[9] == 0xff) // No Long average speed
         {

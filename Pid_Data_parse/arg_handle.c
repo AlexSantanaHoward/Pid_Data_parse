@@ -47,7 +47,7 @@ static int string_find_last_char(char* str, char c)
 {
     int last_char_p = 0;
 
-    for(int i = 0; i <= strlen(str); i++)
+    for(long unsigned int i = 0; i <= strlen(str); i++)
     {
         if(str[i] == c)
         {
@@ -117,22 +117,22 @@ char* com_address(void)
 
 void arg_handle(int argc, char* argv[])
 {
-    // Initialise pv_option as 0 and allow arg to overide.
+    // Initialise pv_option as 0 and allow arg to override.
     pv_option = 0;
 
-    // Intialize bap_option as 0 and allow arg to overide.
+    // Initialize bap_option as 0 and allow arg to override.
     bap_option = 0;
 
-    // Intialize bap_option as 0 and allow arg to overide.
+    // Initialize bap_option as 0 and allow arg to override.
     wip_option = 0;
 
-    // Intialize bap_option as 0 and allow arg to overide.
+    // Initialize bap_option as 0 and allow arg to override.
     dif_option = 0;
 
-    // Intialize nc_option as 1 and allow arg to overide.
+    // Initialize nc_option as 1 and allow arg to override.
     nc_option = 1;
 
-    // Intialize no_option as 1 and allow arg to overide.
+    // Initialize no_option as 1 and allow arg to override.
     no_option = 1;
 
 
@@ -181,7 +181,7 @@ void arg_handle(int argc, char* argv[])
                     // Modify output file name
                     last_period = string_find_last_char(output_file, '.');
            
-                    for(int r = 0; r <= strlen(out_file_end); r++)
+                    for(long unsigned int r = 0; r <= strlen(out_file_end); r++)
                     {
                         output_file[r + last_period] = out_file_end[r];
                     }     
