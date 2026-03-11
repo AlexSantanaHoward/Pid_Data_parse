@@ -1,7 +1,7 @@
 #Defines
 cc := gcc
 oflags := -o
-cflags := -Wall
+cflags := -Wall -Wextra
 exe := Pid_Data_parse
 
 
