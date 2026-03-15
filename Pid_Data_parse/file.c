@@ -9,6 +9,7 @@
 #endif
 
 #include "arg_handle.h"
+#include "ansi.h"
 
 FILE *input;
 FILE *output;
@@ -38,6 +39,7 @@ void input_file_init()
     if (input == NULL)
     {
         printf("\n Error Opening %s : File not found \n", file_in());
+        terminal_fin();
         exit(0);
     }
     else
