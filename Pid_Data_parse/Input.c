@@ -68,7 +68,8 @@ void pulseview_build_message(char c)
         if (p <= 35)
         {
             // Extract byte from string
-            strncpy(crnt_byte_s, Rx_Buff + (p - 2), 2);
+            //TODO I've had to change (p - 2) to (p - 3) on linux, observe if this is the same on windows.. 
+            strncpy(crnt_byte_s, Rx_Buff + (p - 3), 2);
             crnt_byte = str_to_hex(crnt_byte_s);
 
             switch (state)
