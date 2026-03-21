@@ -7,4 +7,8 @@ void wip_parse(uint16_t CAN_ID, uint8_t* data);
 
 //float fFuelConsumption(uint8_t data);
 
+void radio_bap(uint8_t* data);
+
+void clear_buffer(uint8_t* data, int iLen);
+
 #endif
